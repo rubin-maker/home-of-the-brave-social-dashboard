@@ -19,6 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "sources")
 BRAND = "Home of the Brave"
 WEEKLY_CONTEXT_WEEKS = 8
+CATEGORY_TREND_PLATFORMS = ("Instagram", "YouTube", "TikTok")
 
 SOURCES = {
     "YouTube": os.path.join(SRC, "youtube.xlsx"),
@@ -307,6 +308,21 @@ for platform in platforms:
         category_totals[platform].append({"category": category, **aggregate(subset)})
     category_totals[platform].sort(key=lambda x: (-x["views"], x["category"]))
 
+category_weekly = {}
+for platform in CATEGORY_TREND_PLATFORMS:
+    category_weekly[platform] = {}
+    for category_row in category_totals[platform]:
+        category = category_row["category"]
+        category_weekly[platform][category] = {}
+        for week_name, _, _ in weeks:
+            subset = [
+                post for post in posts
+                if post["platform"] == platform
+                and post["category"] == category
+                and post["week"] == week_name
+            ]
+            category_weekly[platform][category][week_name] = aggregate(subset)
+
 source_notes = [
     "YouTube: cumulative per-video metrics through Aug 25, 2026; 52 long-form videos and 425 Shorts.",
     "Instagram: Meta Business Suite export through Aug 26, 2026; 582 reviewed posts.",
@@ -323,6 +339,7 @@ summary = {
     "weekly": weekly,
     "top5": top5,
     "category_totals": category_totals,
+    "category_weekly": category_weekly,
     "metric_definitions": METRIC_DEFINITIONS,
     "source_notes": source_notes,
     "posts": posts,

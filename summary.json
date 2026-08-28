@@ -483,6 +483,2556 @@
    }
   ]
  },
+ "category_weekly": {
+  "Instagram": {
+   "Bill Kristol & Tom Joscelyn": {
+    "Week 27": {
+     "avg_views": 1514,
+     "eng": 79,
+     "er": 1.3,
+     "followers": 1,
+     "posts": 4,
+     "reach": 4365,
+     "views": 6058,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 864,
+     "eng": 55,
+     "er": 1.59,
+     "followers": 3,
+     "posts": 4,
+     "reach": 2969,
+     "views": 3454,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 935,
+     "eng": 100,
+     "er": 2.67,
+     "followers": 4,
+     "posts": 4,
+     "reach": 3170,
+     "views": 3740,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 1868,
+     "eng": 102,
+     "er": 5.46,
+     "followers": 1,
+     "posts": 1,
+     "reach": 1428,
+     "views": 1868,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 1824,
+     "eng": 273,
+     "er": 3.74,
+     "followers": 4,
+     "posts": 4,
+     "reach": 6113,
+     "views": 7295,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 442,
+     "eng": 23,
+     "er": 1.74,
+     "followers": 1,
+     "posts": 3,
+     "reach": 1132,
+     "views": 1325,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 3826,
+     "eng": 729,
+     "er": 6.35,
+     "followers": 39,
+     "posts": 3,
+     "reach": 9434,
+     "views": 11477,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Breaking News": {
+    "Week 27": {
+     "avg_views": 6196,
+     "eng": 2078,
+     "er": 3.35,
+     "followers": 114,
+     "posts": 10,
+     "reach": 52056,
+     "views": 61963,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 32860,
+     "eng": 14211,
+     "er": 2.7,
+     "followers": 920,
+     "posts": 16,
+     "reach": 433142,
+     "views": 525760,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 8047,
+     "eng": 3267,
+     "er": 2.26,
+     "followers": 104,
+     "posts": 18,
+     "reach": 127239,
+     "views": 144846,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 11522,
+     "eng": 2573,
+     "er": 1.31,
+     "followers": 89,
+     "posts": 17,
+     "reach": 169126,
+     "views": 195871,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 16190,
+     "eng": 8696,
+     "er": 4.13,
+     "followers": 307,
+     "posts": 13,
+     "reach": 170307,
+     "views": 210471,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 3498,
+     "eng": 1361,
+     "er": 2.78,
+     "followers": 43,
+     "posts": 14,
+     "reach": 41275,
+     "views": 48969,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 8290,
+     "eng": 5452,
+     "er": 3.65,
+     "followers": 205,
+     "posts": 18,
+     "reach": 127668,
+     "views": 149214,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 6332,
+     "eng": 3580,
+     "er": 3.14,
+     "followers": 95,
+     "posts": 18,
+     "reach": 97775,
+     "views": 113967,
+     "watch_hours": 0
+    }
+   },
+   "HOTB Pod": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 28676,
+     "eng": 3344,
+     "er": 5.83,
+     "followers": 58,
+     "posts": 2,
+     "reach": 49790,
+     "views": 57353,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 2338,
+     "eng": 209,
+     "er": 2.98,
+     "followers": 8,
+     "posts": 3,
+     "reach": 5272,
+     "views": 7014,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 422,
+     "eng": 25,
+     "er": 1.97,
+     "followers": 2,
+     "posts": 3,
+     "reach": 1076,
+     "views": 1267,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 2953,
+     "eng": 364,
+     "er": 6.16,
+     "followers": 9,
+     "posts": 2,
+     "reach": 4722,
+     "views": 5906,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 1467,
+     "eng": 175,
+     "er": 3.98,
+     "followers": 8,
+     "posts": 3,
+     "reach": 3749,
+     "views": 4402,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "KOC": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 1801,
+     "eng": 87,
+     "er": 4.83,
+     "followers": 1,
+     "posts": 1,
+     "reach": 1448,
+     "views": 1801,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "News": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 7156,
+     "eng": 1172,
+     "er": 3.28,
+     "followers": 25,
+     "posts": 5,
+     "reach": 27110,
+     "views": 35780,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 5113,
+     "eng": 545,
+     "er": 5.33,
+     "followers": 12,
+     "posts": 2,
+     "reach": 9143,
+     "views": 10226,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 1033,
+     "eng": 57,
+     "er": 5.52,
+     "followers": 0,
+     "posts": 1,
+     "reach": 832,
+     "views": 1033,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Newsletter": {
+    "Week 27": {
+     "avg_views": 943,
+     "eng": 31,
+     "er": 1.64,
+     "followers": 0,
+     "posts": 2,
+     "reach": 1206,
+     "views": 1886,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 766,
+     "eng": 29,
+     "er": 1.89,
+     "followers": 0,
+     "posts": 2,
+     "reach": 929,
+     "views": 1532,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 3113,
+     "eng": 206,
+     "er": 2.21,
+     "followers": 1,
+     "posts": 3,
+     "reach": 5744,
+     "views": 9338,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 1948,
+     "eng": 91,
+     "er": 1.56,
+     "followers": 2,
+     "posts": 3,
+     "reach": 3165,
+     "views": 5845,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 1238,
+     "eng": 83,
+     "er": 2.23,
+     "followers": 0,
+     "posts": 3,
+     "reach": 2277,
+     "views": 3714,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 1000,
+     "eng": 144,
+     "er": 3.6,
+     "followers": 3,
+     "posts": 4,
+     "reach": 2426,
+     "views": 4000,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 892,
+     "eng": 72,
+     "er": 4.04,
+     "followers": 1,
+     "posts": 2,
+     "reach": 1141,
+     "views": 1784,
+     "watch_hours": 0
+    }
+   },
+   "Other": {
+    "Week 27": {
+     "avg_views": 690,
+     "eng": 88,
+     "er": 2.55,
+     "followers": 1,
+     "posts": 5,
+     "reach": 2245,
+     "views": 3450,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 1073,
+     "eng": 49,
+     "er": 2.28,
+     "followers": 1,
+     "posts": 2,
+     "reach": 1788,
+     "views": 2146,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 2418,
+     "eng": 193,
+     "er": 7.98,
+     "followers": 7,
+     "posts": 1,
+     "reach": 1578,
+     "views": 2418,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 398,
+     "eng": 10,
+     "er": 2.51,
+     "followers": 0,
+     "posts": 1,
+     "reach": 269,
+     "views": 398,
+     "watch_hours": 0
+    }
+   },
+   "Podcast Promo": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 39303,
+     "eng": 405,
+     "er": 0.52,
+     "followers": 3,
+     "posts": 2,
+     "reach": 52653,
+     "views": 78606,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 8294,
+     "eng": 84,
+     "er": 1.01,
+     "followers": 1,
+     "posts": 1,
+     "reach": 4551,
+     "views": 8294,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 1157,
+     "eng": 1,
+     "er": 0.09,
+     "followers": 0,
+     "posts": 1,
+     "reach": 724,
+     "views": 1157,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 3281,
+     "eng": 45,
+     "er": 1.37,
+     "followers": 1,
+     "posts": 1,
+     "reach": 2017,
+     "views": 3281,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 1107,
+     "eng": 12,
+     "er": 1.08,
+     "followers": 0,
+     "posts": 1,
+     "reach": 716,
+     "views": 1107,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 14981,
+     "eng": 144,
+     "er": 0.96,
+     "followers": 3,
+     "posts": 1,
+     "reach": 9469,
+     "views": 14981,
+     "watch_hours": 0
+    }
+   },
+   "Produced Videos": {
+    "Week 27": {
+     "avg_views": 517,
+     "eng": 34,
+     "er": 2.19,
+     "followers": 0,
+     "posts": 3,
+     "reach": 1290,
+     "views": 1552,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 1767,
+     "eng": 63,
+     "er": 3.57,
+     "followers": 4,
+     "posts": 1,
+     "reach": 1434,
+     "views": 1767,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 1844,
+     "eng": 55,
+     "er": 1.49,
+     "followers": 0,
+     "posts": 2,
+     "reach": 2874,
+     "views": 3689,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 4540,
+     "eng": 2188,
+     "er": 24.09,
+     "followers": 20,
+     "posts": 2,
+     "reach": 6646,
+     "views": 9081,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 791,
+     "eng": 57,
+     "er": 7.21,
+     "followers": 5,
+     "posts": 1,
+     "reach": 631,
+     "views": 791,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 18456,
+     "eng": 7225,
+     "er": 7.83,
+     "followers": 189,
+     "posts": 5,
+     "reach": 67201,
+     "views": 92282,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Sarah Matthews": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Testimonials": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   }
+  },
+  "TikTok": {
+   "Bill Kristol & Tom Joscelyn": {
+    "Week 27": {
+     "avg_views": 443,
+     "eng": 103,
+     "er": 5.81,
+     "followers": 0,
+     "posts": 4,
+     "reach": 0,
+     "views": 1773,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 298,
+     "eng": 82,
+     "er": 6.87,
+     "followers": 0,
+     "posts": 4,
+     "reach": 0,
+     "views": 1193,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 469,
+     "eng": 238,
+     "er": 12.69,
+     "followers": 0,
+     "posts": 4,
+     "reach": 0,
+     "views": 1875,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 903,
+     "eng": 144,
+     "er": 15.95,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 903,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 633,
+     "eng": 358,
+     "er": 14.14,
+     "followers": 0,
+     "posts": 4,
+     "reach": 0,
+     "views": 2531,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 446,
+     "eng": 114,
+     "er": 8.52,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 1338,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 264,
+     "eng": 83,
+     "er": 10.47,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 793,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Breaking News": {
+    "Week 27": {
+     "avg_views": 5985,
+     "eng": 5162,
+     "er": 8.62,
+     "followers": 0,
+     "posts": 10,
+     "reach": 0,
+     "views": 59851,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 5364,
+     "eng": 4908,
+     "er": 5.72,
+     "followers": 0,
+     "posts": 16,
+     "reach": 0,
+     "views": 85831,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 379,
+     "eng": 708,
+     "er": 10.37,
+     "followers": 0,
+     "posts": 18,
+     "reach": 0,
+     "views": 6830,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 413,
+     "eng": 722,
+     "er": 10.29,
+     "followers": 0,
+     "posts": 17,
+     "reach": 0,
+     "views": 7019,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 627,
+     "eng": 747,
+     "er": 8.51,
+     "followers": 0,
+     "posts": 14,
+     "reach": 0,
+     "views": 8777,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 425,
+     "eng": 485,
+     "er": 8.15,
+     "followers": 0,
+     "posts": 14,
+     "reach": 0,
+     "views": 5954,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 1389,
+     "eng": 1132,
+     "er": 5.09,
+     "followers": 0,
+     "posts": 16,
+     "reach": 0,
+     "views": 22228,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 561,
+     "eng": 1051,
+     "er": 10.4,
+     "followers": 0,
+     "posts": 18,
+     "reach": 0,
+     "views": 10105,
+     "watch_hours": 0
+    }
+   },
+   "HOTB Pod": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 390,
+     "eng": 80,
+     "er": 6.84,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 1170,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 242,
+     "eng": 20,
+     "er": 2.75,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 726,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 288,
+     "eng": 64,
+     "er": 7.41,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 864,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 500,
+     "eng": 125,
+     "er": 12.51,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 999,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 314,
+     "eng": 110,
+     "er": 11.68,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 942,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "KOC": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 118,
+     "eng": 3,
+     "er": 2.54,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 118,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "News": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 329,
+     "eng": 211,
+     "er": 12.83,
+     "followers": 0,
+     "posts": 5,
+     "reach": 0,
+     "views": 1645,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 2800,
+     "eng": 314,
+     "er": 5.61,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 5599,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 990,
+     "eng": 227,
+     "er": 22.93,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 990,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Newsletter": {
+    "Week 27": {
+     "avg_views": 322,
+     "eng": 12,
+     "er": 1.86,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 645,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 134,
+     "eng": 5,
+     "er": 1.87,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 268,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 4576,
+     "eng": 213,
+     "er": 1.55,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 13729,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 140,
+     "eng": 11,
+     "er": 3.91,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 281,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 124,
+     "eng": 6,
+     "er": 2.41,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 249,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 141,
+     "eng": 21,
+     "er": 3.73,
+     "followers": 0,
+     "posts": 4,
+     "reach": 0,
+     "views": 563,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 148,
+     "eng": 10,
+     "er": 3.39,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 295,
+     "watch_hours": 0
+    }
+   },
+   "Other": {
+    "Week 27": {
+     "avg_views": 350,
+     "eng": 80,
+     "er": 4.57,
+     "followers": 0,
+     "posts": 5,
+     "reach": 0,
+     "views": 1751,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 480,
+     "eng": 73,
+     "er": 7.61,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 959,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 209,
+     "eng": 18,
+     "er": 8.61,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 209,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 187,
+     "eng": 7,
+     "er": 3.74,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 187,
+     "watch_hours": 0
+    }
+   },
+   "Podcast Promo": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 180,
+     "eng": 8,
+     "er": 2.22,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 361,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 969,
+     "eng": 16,
+     "er": 1.65,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 969,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 101,
+     "eng": 0,
+     "er": 0.0,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 101,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 277,
+     "eng": 9,
+     "er": 3.25,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 277,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 301,
+     "eng": 11,
+     "er": 3.65,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 301,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 632,
+     "eng": 22,
+     "er": 3.48,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 632,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 247,
+     "eng": 12,
+     "er": 2.43,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 494,
+     "watch_hours": 0
+    }
+   },
+   "Produced Videos": {
+    "Week 27": {
+     "avg_views": 227,
+     "eng": 37,
+     "er": 5.43,
+     "followers": 0,
+     "posts": 3,
+     "reach": 0,
+     "views": 681,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 619,
+     "eng": 58,
+     "er": 9.37,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 619,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 664,
+     "eng": 92,
+     "er": 6.93,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 1328,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 352,
+     "eng": 128,
+     "er": 18.21,
+     "followers": 0,
+     "posts": 2,
+     "reach": 0,
+     "views": 703,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 185,
+     "eng": 4,
+     "er": 2.16,
+     "followers": 0,
+     "posts": 1,
+     "reach": 0,
+     "views": 185,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 770,
+     "eng": 357,
+     "er": 9.27,
+     "followers": 0,
+     "posts": 5,
+     "reach": 0,
+     "views": 3851,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Sarah Matthews": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Testimonials": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   }
+  },
+  "YouTube": {
+   "Ad": {
+    "Week 27": {
+     "avg_views": 180,
+     "eng": 48,
+     "er": 13.3,
+     "followers": 1,
+     "posts": 2,
+     "reach": 3549,
+     "views": 361,
+     "watch_hours": 2.09
+    },
+    "Week 28": {
+     "avg_views": 1029,
+     "eng": 216,
+     "er": 10.5,
+     "followers": 3,
+     "posts": 2,
+     "reach": 3681,
+     "views": 2058,
+     "watch_hours": 8.64
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 710,
+     "eng": 78,
+     "er": 5.49,
+     "followers": 0,
+     "posts": 2,
+     "reach": 3218,
+     "views": 1420,
+     "watch_hours": 9.92
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 1190,
+     "eng": 261,
+     "er": 10.96,
+     "followers": 6,
+     "posts": 2,
+     "reach": 5311,
+     "views": 2381,
+     "watch_hours": 20.65
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Bill Kristol & Tom Joscelyn": {
+    "Week 27": {
+     "avg_views": 2138,
+     "eng": 209,
+     "er": 1.96,
+     "followers": 8,
+     "posts": 5,
+     "reach": 8768,
+     "views": 10688,
+     "watch_hours": 79.83
+    },
+    "Week 28": {
+     "avg_views": 8669,
+     "eng": 1660,
+     "er": 3.19,
+     "followers": 130,
+     "posts": 6,
+     "reach": 492917,
+     "views": 52012,
+     "watch_hours": 17411.72
+    },
+    "Week 29": {
+     "avg_views": 2024,
+     "eng": 520,
+     "er": 5.14,
+     "followers": 61,
+     "posts": 5,
+     "reach": 82170,
+     "views": 10119,
+     "watch_hours": 985.71
+    },
+    "Week 30": {
+     "avg_views": 2214,
+     "eng": 263,
+     "er": 5.94,
+     "followers": 8,
+     "posts": 2,
+     "reach": 11353,
+     "views": 4428,
+     "watch_hours": 286.2
+    },
+    "Week 31": {
+     "avg_views": 1858,
+     "eng": 574,
+     "er": 6.18,
+     "followers": 48,
+     "posts": 5,
+     "reach": 57374,
+     "views": 9288,
+     "watch_hours": 854.43
+    },
+    "Week 32": {
+     "avg_views": 1677,
+     "eng": 302,
+     "er": 4.5,
+     "followers": 33,
+     "posts": 4,
+     "reach": 65745,
+     "views": 6708,
+     "watch_hours": 536.61
+    },
+    "Week 33": {
+     "avg_views": 2592,
+     "eng": 502,
+     "er": 4.84,
+     "followers": 53,
+     "posts": 4,
+     "reach": 96688,
+     "views": 10368,
+     "watch_hours": 938.79
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Breaking News": {
+    "Week 27": {
+     "avg_views": 16683,
+     "eng": 5018,
+     "er": 3.01,
+     "followers": 188,
+     "posts": 10,
+     "reach": 8371,
+     "views": 166832,
+     "watch_hours": 641.69
+    },
+    "Week 28": {
+     "avg_views": 8413,
+     "eng": 6152,
+     "er": 4.57,
+     "followers": 141,
+     "posts": 16,
+     "reach": 17849,
+     "views": 134605,
+     "watch_hours": 719.62
+    },
+    "Week 29": {
+     "avg_views": 12235,
+     "eng": 8454,
+     "er": 3.84,
+     "followers": 182,
+     "posts": 18,
+     "reach": 18411,
+     "views": 220238,
+     "watch_hours": 1067.96
+    },
+    "Week 30": {
+     "avg_views": 6044,
+     "eng": 4837,
+     "er": 4.71,
+     "followers": 77,
+     "posts": 17,
+     "reach": 24050,
+     "views": 102744,
+     "watch_hours": 543.55
+    },
+    "Week 31": {
+     "avg_views": 15750,
+     "eng": 6985,
+     "er": 3.41,
+     "followers": 121,
+     "posts": 13,
+     "reach": 9757,
+     "views": 204749,
+     "watch_hours": 1038.11
+    },
+    "Week 32": {
+     "avg_views": 12374,
+     "eng": 4590,
+     "er": 2.65,
+     "followers": 90,
+     "posts": 14,
+     "reach": 13501,
+     "views": 173230,
+     "watch_hours": 893.34
+    },
+    "Week 33": {
+     "avg_views": 9349,
+     "eng": 6325,
+     "er": 3.76,
+     "followers": 88,
+     "posts": 18,
+     "reach": 13766,
+     "views": 168288,
+     "watch_hours": 808.44
+    },
+    "Week 34": {
+     "avg_views": 5172,
+     "eng": 4119,
+     "er": 4.42,
+     "followers": 91,
+     "posts": 18,
+     "reach": 8894,
+     "views": 93087,
+     "watch_hours": 564.52
+    }
+   },
+   "HOTB Pod": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 108,
+     "eng": 11,
+     "er": 10.19,
+     "followers": 0,
+     "posts": 1,
+     "reach": 470,
+     "views": 108,
+     "watch_hours": 0.45
+    },
+    "Week 29": {
+     "avg_views": 1058,
+     "eng": 234,
+     "er": 5.53,
+     "followers": 2,
+     "posts": 4,
+     "reach": 2260,
+     "views": 4230,
+     "watch_hours": 26.42
+    },
+    "Week 30": {
+     "avg_views": 582,
+     "eng": 124,
+     "er": 7.1,
+     "followers": 1,
+     "posts": 3,
+     "reach": 1296,
+     "views": 1747,
+     "watch_hours": 13.12
+    },
+    "Week 31": {
+     "avg_views": 959,
+     "eng": 172,
+     "er": 8.97,
+     "followers": 0,
+     "posts": 2,
+     "reach": 1539,
+     "views": 1918,
+     "watch_hours": 11.78
+    },
+    "Week 32": {
+     "avg_views": 925,
+     "eng": 303,
+     "er": 10.92,
+     "followers": 1,
+     "posts": 3,
+     "reach": 1928,
+     "views": 2774,
+     "watch_hours": 15.51
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Home of the Brave Podcast": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 10948,
+     "eng": 847,
+     "er": 7.74,
+     "followers": 170,
+     "posts": 1,
+     "reach": 231998,
+     "views": 10948,
+     "watch_hours": 1263.42
+    },
+    "Week 29": {
+     "avg_views": 232,
+     "eng": 19,
+     "er": 8.19,
+     "followers": 5,
+     "posts": 1,
+     "reach": 4336,
+     "views": 232,
+     "watch_hours": 25.92
+    },
+    "Week 30": {
+     "avg_views": 129,
+     "eng": 10,
+     "er": 7.75,
+     "followers": 1,
+     "posts": 1,
+     "reach": 2704,
+     "views": 129,
+     "watch_hours": 14.6
+    },
+    "Week 31": {
+     "avg_views": 6344,
+     "eng": 607,
+     "er": 9.57,
+     "followers": 89,
+     "posts": 1,
+     "reach": 105097,
+     "views": 6344,
+     "watch_hours": 463.96
+    },
+    "Week 32": {
+     "avg_views": 2421,
+     "eng": 222,
+     "er": 9.17,
+     "followers": 31,
+     "posts": 1,
+     "reach": 38006,
+     "views": 2421,
+     "watch_hours": 185.53
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "KOC": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "News": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 4766,
+     "eng": 760,
+     "er": 3.19,
+     "followers": 8,
+     "posts": 5,
+     "reach": 2547,
+     "views": 23831,
+     "watch_hours": 110.19
+    },
+    "Week 30": {
+     "avg_views": 9703,
+     "eng": 1387,
+     "er": 7.15,
+     "followers": 11,
+     "posts": 2,
+     "reach": 49186,
+     "views": 19406,
+     "watch_hours": 140.62
+    },
+    "Week 31": {
+     "avg_views": 4602,
+     "eng": 471,
+     "er": 10.23,
+     "followers": 2,
+     "posts": 1,
+     "reach": 735,
+     "views": 4602,
+     "watch_hours": 20.05
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Sarah Matthews": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 30": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   },
+   "Social Ads": {
+    "Week 27": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 28": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 29": {
+     "avg_views": 2652,
+     "eng": 44,
+     "er": 1.66,
+     "followers": 0,
+     "posts": 1,
+     "reach": 281,
+     "views": 2652,
+     "watch_hours": 12.26
+    },
+    "Week 30": {
+     "avg_views": 189,
+     "eng": 66,
+     "er": 11.64,
+     "followers": 2,
+     "posts": 3,
+     "reach": 9162,
+     "views": 567,
+     "watch_hours": 12.99
+    },
+    "Week 31": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 32": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    },
+    "Week 33": {
+     "avg_views": 3147,
+     "eng": 644,
+     "er": 4.09,
+     "followers": 8,
+     "posts": 5,
+     "reach": 2054,
+     "views": 15736,
+     "watch_hours": 110.04
+    },
+    "Week 34": {
+     "avg_views": 0,
+     "eng": 0,
+     "er": null,
+     "followers": 0,
+     "posts": 0,
+     "reach": 0,
+     "views": 0,
+     "watch_hours": 0
+    }
+   }
+  }
+ },
  "metric_definitions": {
   "Instagram": {
    "audience": "Reach",
