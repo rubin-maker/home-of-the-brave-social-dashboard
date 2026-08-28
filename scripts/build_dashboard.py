@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""Build a self-contained interactive HOTB social dashboard from summary.json."""
+
+import json
+import os
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+with open(os.path.join(ROOT, "summary.json"), encoding="utf-8") as handle:
+    source = json.load(handle)
+
+MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def span(start, end):
+    first_month, first_day = MONTHS[int(start[5:7]) - 1], int(start[8:10])
+    last_month, last_day = MONTHS[int(end[5:7]) - 1], int(end[8:10])
+    return f"{first_month} {first_day}–{last_day}" if first_month == last_month else f"{first_month} {first_day}–{last_month} {last_day}"
+
+
+report = source["report_scope"]
+scope_label = span(report["start"], report["end"])
+period_label = span(source["period"]["start"], source["period"]["end"])
+year = source["period"]["end"][:4]
+week_labels = {name: f"{name.replace('Week ', 'W')} · {span(start, end)}" for name, start, end in source["weeks"]}
+
+
+def slim(post):
+    return {
+        "p": post["platform"], "w": post["week"], "d": post["date"],
+        "t": (post["title"] or "")[:220], "u": post["url"], "v": post["views"],
+        "e": post["engagements"], "c": post["category"], "y": post["type"],
+    }
+
+
+data = {
+    "totals": source["totals"],
+    "scope": report,
+    "weeks": source["weeks"],
+    "weekly": source["weekly"],
+    "top5": {
+        week: {platform: [slim(post) for post in posts] for platform, posts in by_platform.items()}
+        for week, by_platform in source["top5"].items()
+    },
+    "categories": source["category_totals"],
+    "definitions": source["metric_definitions"],
+    "sources": source["source_notes"],
+    "posts": [slim(post) for post in sorted(source["posts"], key=lambda post: -post["views"])],
+    "wlbl": week_labels,
+    "reportWeek": report["week"],
+}
+
+palette = {
+    "YouTube": "#ff3155",
+    "Instagram": "#c13584",
+    "TikTok": "#00a6a6",
+    "X": "#68707c",
+}
+
+html = r'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>__BRAND__ — Social Performance, __SCOPE__, __YEAR__</title>
+<style>
+:root{color-scheme:light;--page:#f5f2eb;--surface:#fffdfa;--surface2:#f1ede5;--ink:#171512;--ink2:#5f5a52;
+ --muted:#847e74;--grid:#e4ded4;--axis:#c8c0b4;--border:rgba(23,21,18,.11);--accent:#a51d2d;
+ --good:#087443;--bad:#c33c3c;--shadow:0 12px 36px rgba(71,55,33,.06)}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--page:#12110f;--surface:#1b1916;--surface2:#25221e;--ink:#f8f3ea;
+ --ink2:#cec6bb;--muted:#a3998d;--grid:#36312b;--axis:#4a433b;--border:rgba(255,255,255,.10);--accent:#ef6472;
+ --good:#5bd09b;--bad:#ff8585;--shadow:none}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ background:var(--page);color:var(--ink);font-size:14px;line-height:1.5;padding:0 20px 80px}
+.wrap{max-width:1180px;margin:0 auto}.mast{padding:44px 0 30px;border-bottom:1px solid var(--axis);display:flex;gap:24px;justify-content:space-between;align-items:end}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:750;color:var(--accent);margin-bottom:8px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(31px,5vw,53px);line-height:1.02;letter-spacing:-.035em;margin:0;max-width:760px}
+h2{font-size:18px;line-height:1.25;margin:0 0 5px}h3{font-size:14px;margin:0 0 9px}.sub{color:var(--ink2);margin-top:11px;max-width:850px}
+.stamp{font-size:12px;color:var(--ink2);text-align:right;white-space:nowrap}.stamp b{display:block;color:var(--ink);font-size:15px}
+section{margin-top:40px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:12px}.note{font-size:12px;color:var(--muted)}
+.grid{display:grid;gap:14px}.hero{grid-template-columns:repeat(4,minmax(0,1fr))}.platform-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+.tile .label{font-size:11px;text-transform:uppercase;letter-spacing:.065em;color:var(--ink2);font-weight:700}.tile .value{font-size:30px;font-weight:720;letter-spacing:-.035em;margin-top:5px}
+.tile .detail{font-size:12px;color:var(--muted);margin-top:4px}.platform-card{position:relative;overflow:hidden}.platform-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--platform)}
+.platform-name{font-weight:730}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--platform)}
+.spark{display:block;width:100%;height:38px;margin-top:12px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.045em;font-weight:700;text-align:left;padding:9px 10px;border-bottom:1px solid var(--axis);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1px solid var(--axis)}.delta{display:block;font-size:10px;font-weight:700;margin-top:1px}
+.up{color:var(--good)}.down{color:var(--bad)}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:7px}.tabs button,.select,input{font:inherit;border:1px solid var(--axis);border-radius:9px;background:var(--surface);color:var(--ink)}
+.tabs button{padding:7px 12px;cursor:pointer;white-space:nowrap}.tabs button.on{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.controls{display:grid;grid-template-columns:minmax(210px,1fr) 180px;gap:10px;margin-bottom:10px}.select,input{padding:8px 10px;width:100%}
+.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.definition{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;font-size:12px}.definition b{color:var(--ink2)}
+.sources{margin:0;padding-left:18px}.sources li{margin:5px 0;color:var(--ink2)}
+.footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--axis);color:var(--muted);font-size:11px}
+@media(max-width:900px){.hero,.platform-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mast{display:block}.stamp{text-align:left;margin-top:18px}}
+@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}}
+@media print{body{padding:0;background:#fff}.card{box-shadow:none;break-inside:avoid}.tabs,.controls{display:none}.wrap{max-width:none}}
+</style></head><body><div class="wrap">
+<header class="mast"><div><div class="eyebrow">2026 social intelligence</div><h1>__BRAND__ performance dashboard</h1>
+<div class="sub">A unified view of YouTube, Instagram, TikTok, and X. Headline numbers cover the latest fully complete Monday–Sunday week; the explorer retains the full year-to-date file.</div></div>
+<div class="stamp"><span>Reporting week</span><b>__SCOPE__, __YEAR__</b><span>Full file: __PERIOD__</span></div></header>
+
+<section><div class="grid hero" id="hero"></div><div class="grid platform-grid" id="platforms"></div></section>
+
+<section><div class="section-head"><div><h2>Eight-week platform trend</h2><div class="note">Current cumulative post metrics, grouped by publish week.</div></div></div>
+<div class="card scroll" id="weekly"></div>
+<div class="note" style="margin-top:7px">X uses impressions; the other platforms use views. Small week-over-week changes can reflect different metric maturity as posts continue accumulating activity.</div></section>
+
+<section><div class="section-head"><div><h2>Year-to-date category performance</h2><div class="note">Categories follow the reviewed labels in each source workbook.</div></div></div>
+<div class="card"><div class="tabs" id="categoryTabs"></div><div id="categories"></div></div></section>
+
+<section><div class="section-head"><div><h2>Top five posts by platform</h2><div class="note">Select one of the eight complete context weeks.</div></div></div>
+<div class="card"><div class="tabs" id="weekTabs"></div><div id="tops"></div></div></section>
+
+<section><div class="section-head"><div><h2>All-posts explorer</h2><div class="note">Searches the full year-to-date dataset; rows are ranked by views/impressions.</div></div></div>
+<div class="card"><div class="controls"><input id="search" placeholder="Search post text or category…"><select class="select" id="platformFilter"></select></div>
+<div class="scroll" id="allPosts"></div><div class="note" style="margin-top:7px">Showing up to 500 matching rows. The complete dataset is in all_posts.csv.</div></div></section>
+
+<section><div class="section-head"><div><h2>Metric definitions and coverage</h2><div class="note">Cross-platform totals combine similar, but not identical, platform measures.</div></div></div>
+<div class="grid metric-grid" id="definitions"></div><div class="card" style="margin-top:14px"><h3>Source coverage</h3><ul class="sources" id="sources"></ul></div></section>
+
+<div class="footer">Built from the four reviewed 2026 HOTB workbooks. Self-contained and usable offline; outbound post links require internet access.</div>
+</div><script>
+const D=__DATA__,PC=__PC__,PLATS=Object.keys(D.totals);
+const full=n=>(n||0).toLocaleString();
+const fmt=n=>n>=1e9?(n/1e9).toFixed(1)+"B":n>=1e6?(n/1e6).toFixed(1)+"M":n>=1e4?Math.round(n/1e3)+"K":full(n);
+const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+const rate=(e,v)=>v?(100*e/v).toFixed(2)+"%":"—";
+const delta=(a,b)=>!a?"—":`${b>=a?"+":""}${Math.round(100*(b-a)/a)}%`;
+const spark=(vals,color)=>{const max=Math.max(...vals,1);return `<svg class="spark" viewBox="0 0 160 38" preserveAspectRatio="none" aria-label="Eight-week trend">${vals.map((v,i)=>{const h=Math.max(1,32*v/max);return `<rect x="${i*20+2}" y="${36-h}" width="14" height="${h}" rx="2" fill="${color}" opacity="${i===vals.length-1?1:.48}"/>`}).join("")}</svg>`};
+
+const RS=D.scope,blend=rate(RS.eng,RS.views);
+document.getElementById("hero").innerHTML=[
+ ["Views / impressions",fmt(RS.views),D.wlbl[D.reportWeek]],
+ ["Engagements",fmt(RS.eng),blend+" blended interaction rate"],
+ ["Posts published",full(RS.posts),PLATS.length+" platforms"],
+ ["Avg. per post",fmt(Math.round(RS.views/Math.max(RS.posts,1))),"views / impressions"],
+].map(x=>`<div class="card tile"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="detail">${x[2]}</div></div>`).join("");
+
+document.getElementById("platforms").innerHTML=PLATS.map(p=>({p,t:RS.totals[p]})).sort((a,b)=>b.t.views-a.t.views).map(({p,t})=>{
+ const vals=D.weeks.map(w=>D.weekly[w[0]][p].views),unit=D.definitions[p].metric_label;
+ return `<div class="card tile platform-card" style="--platform:${PC[p]}"><div class="label"><span class="dot"></span><span class="platform-name">${p}</span></div>
+ <div class="value">${fmt(t.views)}</div><div class="detail">${unit} · ${fmt(t.eng)} engagements · ${t.posts} posts · ${t.er??"—"}% rate</div>
+ ${spark(vals,PC[p])}<div class="detail">YTD: ${fmt(D.totals[p].views)} ${unit} across ${full(D.totals[p].posts)} posts</div></div>`}).join("");
+
+(function(){let h=`<table><thead><tr><th>Platform</th>${D.weeks.map(w=>`<th class="n">${esc(D.wlbl[w[0]])}</th>`).join("")}</tr></thead><tbody>`;
+ for(const p of PLATS){const vals=D.weeks.map(w=>D.weekly[w[0]][p].views);h+=`<tr><td><span class="dot" style="--platform:${PC[p]}"></span>${p}</td>`+
+ vals.map((v,i)=>`<td class="n">${fmt(v)}${i===vals.length-1?`<span class="delta ${v>=vals[i-1]?"up":"down"}">${delta(vals[i-1],v)}</span>`:""}</td>`).join("")+`</tr>`}
+ h+=`</tbody></table>`;document.getElementById("weekly").innerHTML=h})();
+
+document.getElementById("categoryTabs").innerHTML=PLATS.map((p,i)=>`<button data-p="${esc(p)}" class="${i===0?"on":""}">${p}</button>`).join("");
+function renderCategories(platform){document.querySelectorAll("#categoryTabs button").forEach(b=>b.classList.toggle("on",b.dataset.p===platform));
+ const rows=D.categories[platform];document.getElementById("categories").innerHTML=`<div class="scroll"><table><thead><tr><th>Category</th><th class="n">Posts</th><th class="n">${D.definitions[platform].metric_label}</th><th class="n">Avg / post</th><th class="n">Engagements</th><th class="n">Rate</th></tr></thead><tbody>`+
+ rows.map(x=>`<tr><td>${esc(x.category)}</td><td class="n">${full(x.posts)}</td><td class="n">${full(x.views)}</td><td class="n">${full(x.avg_views)}</td><td class="n">${full(x.eng)}</td><td class="n">${x.er??"—"}%</td></tr>`).join("")+`</tbody></table></div>`}
+document.querySelectorAll("#categoryTabs button").forEach(b=>b.addEventListener("click",()=>renderCategories(b.dataset.p)));renderCategories(PLATS[0]);
+
+document.getElementById("weekTabs").innerHTML=D.weeks.map(w=>`<button data-w="${esc(w[0])}">${esc(D.wlbl[w[0]])}</button>`).join("");
+function renderTops(week){document.querySelectorAll("#weekTabs button").forEach(b=>b.classList.toggle("on",b.dataset.w===week));
+ document.getElementById("tops").innerHTML=PLATS.map(p=>{const rows=(D.top5[week][p]||[]).filter(x=>x.v>0);if(!rows.length)return "";
+ return `<h3 style="margin-top:18px"><span class="dot" style="--platform:${PC[p]}"></span>${p}</h3><div class="scroll"><table><thead><tr><th class="n">#</th><th>Date</th><th>Category</th><th>Post</th><th class="n">${D.definitions[p].metric_label}</th><th class="n">Eng.</th></tr></thead><tbody>`+
+ rows.map((x,i)=>`<tr><td class="n">${i+1}</td><td>${x.d.slice(5)}</td><td>${esc(x.c)}</td><td>${x.u?`<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)||"(no text)"}</a>`:esc(x.t)}</td><td class="n">${full(x.v)}</td><td class="n">${full(x.e)}</td></tr>`).join("")+`</tbody></table></div>`}).join("")||`<div class="note">No posts in this week.</div>`}
+document.querySelectorAll("#weekTabs button").forEach(b=>b.addEventListener("click",()=>renderTops(b.dataset.w)));renderTops(D.reportWeek);
+
+document.getElementById("platformFilter").innerHTML=`<option value="">All platforms</option>`+PLATS.map(p=>`<option>${p}</option>`).join("");
+function renderAll(){const q=document.getElementById("search").value.trim().toLowerCase(),p=document.getElementById("platformFilter").value;
+ const rows=D.posts.filter(x=>(!p||x.p===p)&&(!q||(x.t+" "+x.c).toLowerCase().includes(q))).slice(0,500);
+ document.getElementById("allPosts").innerHTML=`<table><thead><tr><th>Platform</th><th>Date</th><th>Category</th><th>Post</th><th class="n">Views / impr.</th><th class="n">Eng.</th></tr></thead><tbody>`+
+ rows.map(x=>`<tr><td><span class="dot" style="--platform:${PC[x.p]}"></span>${x.p}</td><td>${x.d}</td><td>${esc(x.c)}</td><td>${x.u?`<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)||"(no text)"}</a>`:esc(x.t)}</td><td class="n">${full(x.v)}</td><td class="n">${full(x.e)}</td></tr>`).join("")+`</tbody></table>`}
+document.getElementById("search").addEventListener("input",renderAll);document.getElementById("platformFilter").addEventListener("change",renderAll);renderAll();
+
+document.getElementById("definitions").innerHTML=PLATS.map(p=>{const d=D.definitions[p];return `<div class="card"><h3><span class="dot" style="--platform:${PC[p]}"></span>${p}</h3><div class="definition"><b>Headline metric</b><span>${esc(d.views)}</span><b>Engagements</b><span>${esc(d.engagements)}</span><b>Audience metric</b><span>${esc(d.audience)}</span></div></div>`}).join("");
+document.getElementById("sources").innerHTML=D.sources.map(x=>`<li>${esc(x)}</li>`).join("");
+</script></body></html>'''
+
+page = (html.replace("__BRAND__", source["brand"])
+            .replace("__SCOPE__", scope_label)
+            .replace("__PERIOD__", period_label)
+            .replace("__YEAR__", year)
+            .replace("__DATA__", json.dumps(data, ensure_ascii=False, separators=(",", ":")))
+            .replace("__PC__", json.dumps(palette, separators=(",", ":"))))
+
+output = os.path.join(ROOT, "dashboard.html")
+index_output = os.path.join(ROOT, "index.html")
+for path in (output, index_output):
+    with open(path, "w", encoding="utf-8") as handle:
+        handle.write(page)
+print(output, f"{os.path.getsize(output) / 1024:.0f} KB", "+ index.html")
