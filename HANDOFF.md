@@ -15,6 +15,8 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 
 ## Reporting scope
 
+- The YouTube subscriber card sums `Subscribers gained` across all exported Long Data and Shorts Data videos. It is not the separate `Subscribers` field, a live channel subscriber count, or net growth. The current channel total is unavailable in these files.
+
 - Weeks run Monday–Sunday and are assigned by publish date.
 - The reporting week is the latest fully closed week before the newest post date in the source files.
 - The trend table keeps the latest eight complete weeks.

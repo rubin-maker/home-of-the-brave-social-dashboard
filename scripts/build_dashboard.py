@@ -34,6 +34,7 @@ def slim(post):
 
 data = {
     "totals": source["totals"],
+    "subscribers": source["youtube_subscribers"],
     "scope": report,
     "weeks": source["weeks"],
     "weekly": source["weekly"],
@@ -80,6 +81,7 @@ section{margin-top:40px}.section-head{display:flex;justify-content:space-between
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
 .tile .label{font-size:11px;text-transform:uppercase;letter-spacing:.065em;color:var(--ink2);font-weight:700}.tile .value{font-size:30px;font-weight:720;letter-spacing:-.035em;margin-top:5px}
 .tile .detail{font-size:12px;color:var(--muted);margin-top:4px}.platform-card{position:relative;overflow:hidden}.platform-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--platform)}
+.subscriber-card{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);align-items:center;gap:20px}.subscriber-card .value{font-variant-numeric:tabular-nums}.subscriber-card .detail{max-width:75ch}
 .platform-name{font-weight:730}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--platform)}
 .spark{display:block;width:100%;height:38px;margin-top:12px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
 th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.045em;font-weight:700;text-align:left;padding:9px 10px;border-bottom:1px solid var(--axis);white-space:nowrap}
@@ -97,7 +99,7 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 .sources{margin:0;padding-left:18px}.sources li{margin:5px 0;color:var(--ink2)}
 .footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--axis);color:var(--muted);font-size:11px}
 @media(max-width:900px){.hero,.platform-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mast{display:block}.stamp{text-align:left;margin-top:18px}}
-@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}}
+@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid,.subscriber-card{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}}
 @media print{body{padding:0;background:#fff}.card{box-shadow:none;break-inside:avoid}.tabs,.controls{display:none}.wrap{max-width:none}}
 </style></head><body><div class="wrap">
 <header class="mast"><div><div class="eyebrow">2026 social intelligence</div><h1>__BRAND__ performance dashboard</h1>
@@ -105,6 +107,9 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 <div class="stamp"><span>Reporting week</span><b>__SCOPE__, __YEAR__</b><span>Full file: __PERIOD__</span></div></header>
 
 <section><div class="grid hero" id="hero"></div><div class="grid platform-grid" id="platforms"></div></section>
+
+<section aria-labelledby="subscriber-heading"><div class="section-head"><h2 id="subscriber-heading">YouTube subscribers gained</h2></div>
+<div class="card tile subscriber-card" id="subscribers"></div></section>
 
 <section><div class="section-head"><div><h2>Eight-week platform trend</h2><div class="note">Current cumulative post metrics, grouped by publish week.</div></div></div>
 <div class="card scroll" id="weekly"></div>
@@ -164,6 +169,10 @@ function renderCategoryTrends(){
 }
 
 const RS=D.scope,blend=rate(RS.eng,RS.views);
+const SUB=D.subscribers;
+const subCutoff=new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(SUB.as_of+"T00:00:00Z"));
+document.getElementById("subscribers").innerHTML=`<div><div class="label">2026 exported videos</div><div class="value">${full(SUB.gained)}</div><div class="detail">Cumulative through ${esc(subCutoff)}</div></div>
+<div><div>${full(SUB.long_form)} from long-form · ${full(SUB.shorts)} from Shorts</div><div class="detail">Subscribers gained across ${full(SUB.video_count)} exported videos—not the current channel subscriber total or net growth. Shorts data ends Aug 24, 2026.</div><div class="detail">Source: ${esc(SUB.source)}</div></div>`;
 document.getElementById("hero").innerHTML=[
  ["Views / impressions",fmt(RS.views),D.wlbl[D.reportWeek]],
  ["Engagements",fmt(RS.eng),blend+" blended interaction rate"],
@@ -204,7 +213,7 @@ function renderAll(){const q=document.getElementById("search").value.trim().toLo
  rows.map(x=>`<tr><td><span class="dot" style="--platform:${PC[x.p]}"></span>${x.p}</td><td>${x.d}</td><td>${esc(x.c)}</td><td>${x.u?`<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)||"(no text)"}</a>`:esc(x.t)}</td><td class="n">${full(x.v)}</td><td class="n">${full(x.e)}</td></tr>`).join("")+`</tbody></table>`}
 document.getElementById("search").addEventListener("input",renderAll);document.getElementById("platformFilter").addEventListener("change",renderAll);renderAll();
 
-document.getElementById("definitions").innerHTML=PLATS.map(p=>{const d=D.definitions[p];return `<div class="card"><h3><span class="dot" style="--platform:${PC[p]}"></span>${p}</h3><div class="definition"><b>Headline metric</b><span>${esc(d.views)}</span><b>Engagements</b><span>${esc(d.engagements)}</span><b>Audience metric</b><span>${esc(d.audience)}</span></div></div>`}).join("");
+document.getElementById("definitions").innerHTML=PLATS.map(p=>{const d=D.definitions[p];return `<div class="card"><h3><span class="dot" style="--platform:${PC[p]}"></span>${p}</h3><div class="definition"><b>Headline metric</b><span>${esc(d.views)}</span><b>Engagements</b><span>${esc(d.engagements)}</span><b>Audience metric</b><span>${esc(d.audience)}</span>${d.subscribers?`<b>Subscribers</b><span>${esc(d.subscribers)}</span>`:""}</div></div>`}).join("");
 document.getElementById("sources").innerHTML=D.sources.map(x=>`<li>${esc(x)}</li>`).join("");
 </script></body></html>'''
 

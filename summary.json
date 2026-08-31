@@ -3056,6 +3056,7 @@
    "audience": "Impressions",
    "engagements": "Likes + shares + comments",
    "metric_label": "views",
+   "subscribers": "Subscribers gained attributed to exported videos; not current channel subscribers or net subscriber growth.",
    "views": "Views"
   }
  },
@@ -54937,6 +54938,7 @@
  },
  "source_notes": [
   "YouTube: cumulative per-video metrics through Aug 25, 2026; 52 long-form videos and 425 Shorts.",
+  "YouTube subscribers: the sum of Subscribers gained in Long Data and Shorts Data, not the separate Subscribers column. The current channel subscriber total is not supplied; Shorts coverage ends Aug 24.",
   "Instagram: Meta Business Suite export through Aug 26, 2026; 582 reviewed posts.",
   "TikTok: per-post export through Aug 27, 2026; 563 reviewed posts.",
   "X: combined analytics export and scrape through Aug 26, 2026; 969 authored posts; reposts excluded."
@@ -58644,5 +58646,15 @@
    "2026-08-17",
    "2026-08-23"
   ]
- ]
+ ],
+ "youtube_subscribers": {
+  "as_of": "2026-08-25",
+  "channel_total": null,
+  "definition": "Subscribers gained attributed to exported videos; not current channel subscribers or net subscriber growth.",
+  "gained": 4086,
+  "long_form": 1166,
+  "shorts": 2920,
+  "source": "sources/youtube.xlsx · Long Data and Shorts Data · Subscribers gained",
+  "video_count": 477
+ }
 }

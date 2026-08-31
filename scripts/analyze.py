@@ -34,6 +34,7 @@ METRIC_DEFINITIONS = {
         "engagements": "Likes + shares + comments",
         "audience": "Impressions",
         "metric_label": "views",
+        "subscribers": "Subscribers gained attributed to exported videos; not current channel subscribers or net subscriber growth.",
     },
     "Instagram": {
         "views": "Views",
@@ -276,6 +277,27 @@ for post in posts:
     post["week"] = week_lookup.get(monday_of(post["date"]).isoformat(), "")
 
 totals = {p: aggregate([x for x in posts if x["platform"] == p]) for p in platforms}
+youtube_rows = [post for post in posts if post["platform"] == "YouTube"]
+youtube_workbook = load_workbook(SOURCES["YouTube"], read_only=True, data_only=True)
+try:
+    cutoff = next(
+        row[1] for row in youtube_workbook["Definitions"].iter_rows(values_only=True)
+        if clean_text(row[0]) == "Data cutoff"
+    )
+    youtube_cutoff = iso_date(cutoff, youtube_workbook.epoch)
+finally:
+    youtube_workbook.close()
+youtube_subscribers = {
+    "gained": totals["YouTube"]["followers"],
+    "long_form": sum(post["followers"] for post in youtube_rows if post["type"] == "Long-Form"),
+    "shorts": sum(post["followers"] for post in youtube_rows if post["type"] == "Shorts"),
+    "video_count": len(youtube_rows),
+    "as_of": youtube_cutoff,
+    "channel_total": None,
+    "definition": METRIC_DEFINITIONS["YouTube"]["subscribers"],
+    "source": "sources/youtube.xlsx · Long Data and Shorts Data · Subscribers gained",
+}
+assert youtube_subscribers["long_form"] + youtube_subscribers["shorts"] == youtube_subscribers["gained"]
 weekly = {}
 top5 = {}
 for name, start, end in weeks:
@@ -325,6 +347,7 @@ for platform in CATEGORY_TREND_PLATFORMS:
 
 source_notes = [
     "YouTube: cumulative per-video metrics through Aug 25, 2026; 52 long-form videos and 425 Shorts.",
+    "YouTube subscribers: the sum of Subscribers gained in Long Data and Shorts Data, not the separate Subscribers column. The current channel subscriber total is not supplied; Shorts coverage ends Aug 24.",
     "Instagram: Meta Business Suite export through Aug 26, 2026; 582 reviewed posts.",
     "TikTok: per-post export through Aug 27, 2026; 563 reviewed posts.",
     "X: combined analytics export and scrape through Aug 26, 2026; 969 authored posts; reposts excluded.",
@@ -336,6 +359,7 @@ summary = {
     "weeks": weeks,
     "report_scope": report_scope,
     "totals": totals,
+    "youtube_subscribers": youtube_subscribers,
     "weekly": weekly,
     "top5": top5,
     "category_totals": category_totals,
