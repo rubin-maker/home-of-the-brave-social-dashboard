@@ -82,6 +82,7 @@ section{margin-top:40px}.section-head{display:flex;justify-content:space-between
 .tile .label{font-size:11px;text-transform:uppercase;letter-spacing:.065em;color:var(--ink2);font-weight:700}.tile .value{font-size:30px;font-weight:720;letter-spacing:-.035em;margin-top:5px}
 .tile .detail{font-size:12px;color:var(--muted);margin-top:4px}.platform-card{position:relative;overflow:hidden}.platform-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--platform)}
 .subscriber-card{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);align-items:center;gap:20px}.subscriber-card .value{font-variant-numeric:tabular-nums}.subscriber-card .detail{max-width:75ch}
+.subscriber-weekly-card{margin-top:14px}.subscriber-weekly-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}.subscriber-range{display:flex;align-items:center;gap:9px;flex-wrap:wrap;max-width:100%;font-size:12px;color:var(--ink2)}.subscriber-range .select{width:auto;max-width:100%;min-width:0}.subscriber-weekly-card .note{margin-bottom:10px}
 .platform-name{font-weight:730}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--platform)}
 .spark{display:block;width:100%;height:38px;margin-top:12px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
 th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.045em;font-weight:700;text-align:left;padding:9px 10px;border-bottom:1px solid var(--axis);white-space:nowrap}
@@ -109,7 +110,11 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 <section><div class="grid hero" id="hero"></div><div class="grid platform-grid" id="platforms"></div></section>
 
 <section aria-labelledby="subscriber-heading"><div class="section-head"><h2 id="subscriber-heading">YouTube subscribers gained</h2></div>
-<div class="card tile subscriber-card" id="subscribers"></div></section>
+<div class="card tile subscriber-card" id="subscribers"></div>
+<div class="card subscriber-weekly-card" id="subscriber-weekly"><div class="subscriber-weekly-head"><h3>Subscribers gained by publish week</h3>
+<label class="subscriber-range" for="subscriberRange">Publish weeks<select class="select" id="subscriberRange"><option value="recent">Latest 8 complete weeks</option><option value="all">All available weeks</option></select></label></div>
+<div class="note">Cumulative gains attributed to videos published that week—not gains earned during the week or the channel’s week-end subscriber balance.</div>
+<div class="scroll" id="subscriberWeekly" aria-live="polite"></div></div></section>
 
 <section><div class="section-head"><div><h2>Eight-week platform trend</h2><div class="note">Current cumulative post metrics, grouped by publish week.</div></div></div>
 <div class="card scroll" id="weekly"></div>
@@ -173,6 +178,17 @@ const SUB=D.subscribers;
 const subCutoff=new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(SUB.as_of+"T00:00:00Z"));
 document.getElementById("subscribers").innerHTML=`<div><div class="label">2026 exported videos</div><div class="value">${full(SUB.gained)}</div><div class="detail">Cumulative through ${esc(subCutoff)}</div></div>
 <div><div>${full(SUB.long_form)} from long-form · ${full(SUB.shorts)} from Shorts</div><div class="detail">Subscribers gained across ${full(SUB.video_count)} exported videos—not the current channel subscriber total or net growth. Shorts data ends Aug 24, 2026.</div><div class="detail">Source: ${esc(SUB.source)}</div></div>`;
+const subscriberDate=s=>new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"UTC"}).format(new Date(s+"T00:00:00Z"));
+function renderSubscriberWeeks(){
+ const all=document.getElementById("subscriberRange").value==="all";
+ const rows=all?SUB.weekly:SUB.weekly.filter(row=>row.complete).slice(-8);
+ const total=key=>rows.reduce((sum,row)=>sum+row[key],0);
+ document.getElementById("subscriberWeekly").innerHTML=`<table><caption style="text-align:left;color:var(--ink2);font-size:12px;margin-bottom:8px">${all?"All available publish weeks":"Latest eight complete publish weeks"} · ${full(total("gained"))} subscribers gained from ${full(total("video_count"))} exported videos</caption><thead><tr><th scope="col">Publish week</th><th scope="col" class="n">Long-form</th><th scope="col" class="n">Shorts</th><th scope="col" class="n">Total gained</th><th scope="col" class="n">Videos</th><th scope="col">Coverage</th></tr></thead><tbody>`+
+ rows.map(row=>`<tr><th scope="row">${esc(subscriberDate(row.start))}–${esc(subscriberDate(row.end))}, ${row.end.slice(0,4)}</th><td class="n">${full(row.long_form)}</td><td class="n">${full(row.shorts)}</td><td class="n"><strong>${full(row.gained)}</strong></td><td class="n">${full(row.video_count)}</td><td>${!row.complete?"Partial week — cutoff "+esc(subCutoff):row.video_count?"Complete publish week":"No exported videos"}</td></tr>`).join("")+
+ `<tr class="total"><th scope="row">Shown weeks</th><td class="n">${full(total("long_form"))}</td><td class="n">${full(total("shorts"))}</td><td class="n">${full(total("gained"))}</td><td class="n">${full(total("video_count"))}</td><td></td></tr></tbody></table>`;
+}
+document.getElementById("subscriberRange").addEventListener("change",renderSubscriberWeeks);
+renderSubscriberWeeks();
 document.getElementById("hero").innerHTML=[
  ["Views / impressions",fmt(RS.views),D.wlbl[D.reportWeek]],
  ["Engagements",fmt(RS.eng),blend+" blended interaction rate"],

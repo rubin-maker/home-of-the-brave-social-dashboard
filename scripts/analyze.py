@@ -298,6 +298,33 @@ youtube_subscribers = {
     "source": "sources/youtube.xlsx · Long Data and Shorts Data · Subscribers gained",
 }
 assert youtube_subscribers["long_form"] + youtube_subscribers["shorts"] == youtube_subscribers["gained"]
+subscriber_weeks = []
+subscriber_week = monday_of(min(post["date"] for post in youtube_rows))
+last_subscriber_week = monday_of(max(post["date"] for post in youtube_rows))
+while subscriber_week <= last_subscriber_week:
+    subscriber_end = subscriber_week + timedelta(days=6)
+    cohort = [post for post in youtube_rows
+              if subscriber_week.isoformat() <= post["date"] <= subscriber_end.isoformat()]
+    subscriber_weeks.append({
+        "start": subscriber_week.isoformat(),
+        "end": subscriber_end.isoformat(),
+        "gained": sum(post["followers"] for post in cohort),
+        "long_form": sum(post["followers"] for post in cohort if post["type"] == "Long-Form"),
+        "shorts": sum(post["followers"] for post in cohort if post["type"] == "Shorts"),
+        "video_count": len(cohort),
+        "complete": subscriber_end.isoformat() <= youtube_cutoff,
+    })
+    subscriber_week += timedelta(days=7)
+youtube_subscribers["weekly"] = subscriber_weeks
+youtube_subscribers["weekly_definition"] = (
+    "Cumulative Subscribers gained from exported videos, grouped by Monday–Sunday publish week. "
+    "These are not subscribers gained during the week or the channel subscriber balance at week-end. "
+    "A zero-video week means no videos in the supplied export, not zero channel activity. "
+    "Weeks ending after the export cutoff are partial."
+)
+assert sum(row["gained"] for row in subscriber_weeks) == youtube_subscribers["gained"]
+assert sum(row["video_count"] for row in subscriber_weeks) == youtube_subscribers["video_count"]
+assert all(row["long_form"] + row["shorts"] == row["gained"] for row in subscriber_weeks)
 weekly = {}
 top5 = {}
 for name, start, end in weeks:

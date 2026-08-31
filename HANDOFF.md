@@ -16,6 +16,7 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 ## Reporting scope
 
 - The YouTube subscriber card sums `Subscribers gained` across all exported Long Data and Shorts Data videos. It is not the separate `Subscribers` field, a live channel subscriber count, or net growth. The current channel total is unavailable in these files.
+- The subscriber table groups those same gains by Monday–Sunday publish week, with long-form, Shorts, and total columns. The local selector shows the latest eight complete weeks or all exported weeks. Weeks ending after YouTube's source cutoff are labeled partial; the shown-weeks sum reconciles to the selected rows, and the all-weeks sum reconciles to the subscriber card. These are cumulative video-attributed gains, not weekly-earned gains or week-end subscriber balances.
 
 - Weeks run Monday–Sunday and are assigned by publish date.
 - The reporting week is the latest fully closed week before the newest post date in the source files.
