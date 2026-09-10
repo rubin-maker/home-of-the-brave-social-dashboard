@@ -15,11 +15,11 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 
 ## Reporting scope
 
-- The YouTube subscriber card sums `Subscribers gained` across all exported Long Data and Shorts Data videos. It is not the separate `Subscribers` field, a live channel subscriber count, or net growth. The current channel total is unavailable in these files.
-- The subscriber table groups those same gains by Monday–Sunday publish week, with long-form, Shorts, and total columns. The local selector shows the latest eight complete weeks or all exported weeks. Weeks ending after YouTube's source cutoff are labeled partial; the shown-weeks sum reconciles to the selected rows, and the all-weeks sum reconciles to the subscriber card. These are cumulative video-attributed gains, not weekly-earned gains or week-end subscriber balances.
+- The YouTube subscriber card sums the source workbook's `Subscribers` field across included Long Data and Shorts Data rows. The workbook explicitly says not to relabel it as `Subscribers gained`. It is not a live channel subscriber count or net growth.
+- The subscriber table groups that same source metric by Monday–Sunday publish week, with long-form, Shorts, and total columns. The selector shows the latest eight complete weeks or all exported weeks. Weeks ending after YouTube's source cutoff are labeled partial. Shown-weeks and all-weeks totals reconcile to the same included rows. These are cumulative video-attributed source values, not weekly-earned gains or week-end subscriber balances.
 
 - Weeks run Monday–Sunday and are assigned by publish date.
-- The reporting week is the latest fully closed week before the newest post date in the source files.
+- The reporting week is the latest fully closed week supported by all four platforms. It uses the earliest platform coverage end, while full-file totals retain each platform's own available period.
 - The trend table keeps the latest eight complete weeks.
 - Year-to-date totals, category tables, and the post explorer use every source row.
 - Metrics are current cumulative values attributed to publish date; they are not activity earned only during that week.
@@ -34,7 +34,9 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 
 ## 2026 source coverage in this build
 
-- YouTube: cumulative per-video data through Aug 25; 477 videos.
+- YouTube: cumulative per-video data through Sep 10; 533 included videos (55 long-form and 478 Shorts).
 - Instagram: reviewed Meta export through Aug 26; 582 posts.
 - TikTok: reviewed export through Aug 27; 563 posts.
 - X: merged account analytics and scrape through Aug 26; 969 authored posts, reposts excluded.
+- The updated YouTube workbook retains but excludes aggregate rows, 244 undated long-form rows, and rows outside 2026, matching its `Analysis Status` field.
+- The workbook has 1,002 cached `#VALUE!` cells in weekly delta columns for blank weeks. The dashboard does not use those formulas; it recomputes every displayed YouTube metric from the 533 included raw rows.

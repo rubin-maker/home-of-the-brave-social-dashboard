@@ -34,7 +34,7 @@ METRIC_DEFINITIONS = {
         "engagements": "Likes + shares + comments",
         "audience": "Impressions",
         "metric_label": "views",
-        "subscribers": "Subscribers gained attributed to exported videos; not current channel subscribers or net subscriber growth.",
+        "subscribers": "Source-reported Subscribers attributed to exported videos; not a current channel subscriber count or net subscriber growth.",
     },
     "Instagram": {
         "views": "Views",
@@ -116,12 +116,18 @@ def youtube_posts():
     posts = []
     for sheet_name in ("Long Data", "Shorts Data"):
         for row, epoch in read_rows(SOURCES["YouTube"], sheet_name):
+            status = clean_text(row.get("Analysis Status"))
+            if status and status != "Included":
+                continue
             content_id = clean_text(row.get("Content"))
             published = iso_date(row.get("Video publish time"), epoch)
             likes = int(number(row.get("Likes")))
             shares = int(number(row.get("Shares")))
             comments = int(number(row.get("Comments added")))
-            subscribers = int(number(row.get("Subscribers gained")))
+            subscriber_value = row.get("Subscribers gained")
+            if subscriber_value is None:
+                subscriber_value = row.get("Subscribers")
+            subscribers = int(number(subscriber_value))
             posts.append({
                 "id": content_id,
                 "platform": "YouTube",
@@ -129,7 +135,8 @@ def youtube_posts():
                 "title": clean_text(row.get("Video title")),
                 "url": f"https://www.youtube.com/watch?v={content_id}" if content_id else "",
                 "views": int(number(row.get("Views"))),
-                "reach": int(number(row.get("Impressions"))),
+                "reach": int(number(row.get("Impressions") if row.get("Impressions") is not None
+                                    else row.get("Thumbnail impressions"))),
                 "engagements": likes + shares + comments,
                 "likes": likes,
                 "comments": comments,
@@ -255,7 +262,12 @@ if not posts:
 
 period_start = min(p["date"] for p in posts)
 period_end = max(p["date"] for p in posts)
-latest_complete_sunday = monday_of(period_end) - timedelta(days=1)
+platform_ends = {
+    platform: max(p["date"] for p in posts if p["platform"] == platform)
+    for platform in platforms
+}
+common_coverage_end = min(platform_ends.values())
+latest_complete_sunday = monday_of(common_coverage_end) - timedelta(days=1)
 report_start = latest_complete_sunday - timedelta(days=6)
 report_end = latest_complete_sunday
 
@@ -295,7 +307,7 @@ youtube_subscribers = {
     "as_of": youtube_cutoff,
     "channel_total": None,
     "definition": METRIC_DEFINITIONS["YouTube"]["subscribers"],
-    "source": "sources/youtube.xlsx · Long Data and Shorts Data · Subscribers gained",
+    "source": "sources/youtube.xlsx · Long Data and Shorts Data · Subscribers",
 }
 assert youtube_subscribers["long_form"] + youtube_subscribers["shorts"] == youtube_subscribers["gained"]
 subscriber_weeks = []
@@ -317,7 +329,7 @@ while subscriber_week <= last_subscriber_week:
     subscriber_week += timedelta(days=7)
 youtube_subscribers["weekly"] = subscriber_weeks
 youtube_subscribers["weekly_definition"] = (
-    "Cumulative Subscribers gained from exported videos, grouped by Monday–Sunday publish week. "
+    "Source-reported Subscribers attributed to exported videos, grouped by Monday–Sunday publish week. "
     "These are not subscribers gained during the week or the channel subscriber balance at week-end. "
     "A zero-video week means no videos in the supplied export, not zero channel activity. "
     "Weeks ending after the export cutoff are partial."
@@ -373,16 +385,24 @@ for platform in CATEGORY_TREND_PLATFORMS:
             category_weekly[platform][category][week_name] = aggregate(subset)
 
 source_notes = [
-    "YouTube: cumulative per-video metrics through Aug 25, 2026; 52 long-form videos and 425 Shorts.",
-    "YouTube subscribers: the sum of Subscribers gained in Long Data and Shorts Data, not the separate Subscribers column. The current channel subscriber total is not supplied; Shorts coverage ends Aug 24.",
+    f"YouTube: cumulative per-video metrics through {youtube_cutoff}; "
+    f"{sum(p['type'] == 'Long-Form' for p in youtube_rows)} included long-form videos and "
+    f"{sum(p['type'] == 'Shorts' for p in youtube_rows)} included Shorts.",
+    "YouTube subscriber metric: sum of the source-reported Subscribers column across included videos. "
+    "The workbook says not to relabel it as Subscribers gained; it is not the current channel subscriber total.",
+    "YouTube exclusions retained in the source workbook but omitted from dashboard analysis: aggregate rows, rows without a publish date, and rows outside 2026.",
+    "The source workbook has cached #VALUE! cells in weekly delta columns for blank weeks. The dashboard does not use those formulas; it recomputes from included raw rows.",
     "Instagram: Meta Business Suite export through Aug 26, 2026; 582 reviewed posts.",
     "TikTok: per-post export through Aug 27, 2026; 563 reviewed posts.",
     "X: combined analytics export and scrape through Aug 26, 2026; 969 authored posts; reposts excluded.",
+    f"The headline reporting week is based on common cross-platform coverage through {common_coverage_end}; individual source freshness differs.",
 ]
 
 summary = {
     "brand": BRAND,
     "period": {"start": period_start, "end": period_end},
+    "platform_coverage_end": platform_ends,
+    "common_coverage_end": common_coverage_end,
     "weeks": weeks,
     "report_scope": report_scope,
     "totals": totals,
@@ -400,7 +420,7 @@ with open(os.path.join(ROOT, "summary.json"), "w", encoding="utf-8") as handle:
 
 csv_path = os.path.join(ROOT, "all_posts.csv")
 with open(csv_path, "w", encoding="utf-8-sig", newline="") as handle:
-    writer = csv.writer(handle)
+    writer = csv.writer(handle, lineterminator="\n")
     writer.writerow([
         "Platform", "Date", "Week", "Category", "Type", "Title / Text", "Link",
         "Views / Impressions", "Reach / Impressions", "Engagements", "Engagement Rate %",

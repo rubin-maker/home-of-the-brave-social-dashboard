@@ -1,0 +1,104 @@
+{
+  "source": "youtube.xlsx",
+  "sourceSha256": "d9c63a5d0ba4d050c6a975cb3b89a54c3feef10482c237d61c2cdf373b8e044b",
+  "includedYouTubeRows": 533,
+  "statusCounts": {
+    "Long Data": {
+      "Aggregate row excluded": 1,
+      "Missing publish date": 244,
+      "Included": 55,
+      "Outside 2026 period": 19
+    },
+    "Shorts Data": {
+      "Aggregate row excluded": 1,
+      "Included": 478,
+      "Outside 2026 period": 21
+    }
+  },
+  "youtubeTotals": {
+    "posts": 533,
+    "views": 3398233,
+    "eng": 141189,
+    "reach": 2401564,
+    "followers": 4355,
+    "watch_hours": 46338.44
+  },
+  "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
+  "reportingWeek": {
+    "end": "2026-08-23",
+    "eng": 39675,
+    "posts": 94,
+    "start": "2026-08-17",
+    "totals": {
+      "Instagram": {
+        "avg_views": 5960,
+        "eng": 3806,
+        "er": 2.9,
+        "followers": 99,
+        "posts": 22,
+        "reach": 108654,
+        "views": 131130,
+        "watch_hours": 0
+      },
+      "TikTok": {
+        "avg_views": 482,
+        "eng": 1080,
+        "er": 9.75,
+        "followers": 0,
+        "posts": 23,
+        "reach": 0,
+        "views": 11081,
+        "watch_hours": 0
+      },
+      "X": {
+        "avg_views": 45954,
+        "eng": 30619,
+        "er": 2.15,
+        "followers": 0,
+        "posts": 31,
+        "reach": 0,
+        "views": 1424562,
+        "watch_hours": 0
+      },
+      "YouTube": {
+        "avg_views": 5281,
+        "eng": 4170,
+        "er": 4.39,
+        "followers": 91,
+        "posts": 18,
+        "reach": 10824,
+        "views": 95061,
+        "watch_hours": 575.07
+      }
+    },
+    "views": 1661834,
+    "week": "Week 34"
+  },
+  "knownWorkbookFormulaErrors": {
+    "count": 1002,
+    "bySheet": {
+      "Long Bill & Tom": 75,
+      "Long Ad": 99,
+      "Long Social Ads": 96,
+      "Long KOC": 99,
+      "Long HOTB Podcast": 69,
+      "Short News": 66,
+      "Short Bill & Tom": 78,
+      "Short Breaking News": 45,
+      "Short HOTB Pod": 81,
+      "Short Ad": 99,
+      "Short Social Ads": 96,
+      "Short Sarah Matthews": 99
+    },
+    "impact": "Cached weekly delta cells only; dashboard recomputes from included Long Data and Shorts Data rows."
+  },
+  "checks": [
+    "533 unique included YouTube Content IDs",
+    "All included YouTube rows have 2026 publish dates, titles and recognized categories",
+    "Dashboard YouTube totals reconcile to raw included rows",
+    "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
+    "Headline week remains within common four-platform coverage",
+    "Dashboard and index HTML match",
+    "All-post CSV row counts reconcile to the dashboard summary"
+  ]
+}
