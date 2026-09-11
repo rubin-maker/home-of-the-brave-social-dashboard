@@ -22,6 +22,7 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 - The reporting week is the latest fully closed week supported by all four platforms. It uses the earliest platform coverage end, while full-file totals retain each platform's own available period.
 - The trend table keeps the latest eight complete weeks.
 - The Instagram, YouTube, and TikTok category line charts retain every available 2026 publish week. Their axes use week-start dates instead of ISO week numbers, and each chart stops at that platform's latest included publish date.
+- Each category chart includes a thicker dashed **All categories** line that sums every category for that platform and week.
 - Year-to-date totals, category tables, and the post explorer use every source row.
 - Metrics are current cumulative values attributed to publish date; they are not activity earned only during that week.
 

@@ -102,6 +102,7 @@
     "Category chart axes use readable dates and stop at each platform's latest included publish date",
     "Category charts include Show all and Deselect all controls",
     "Platform cards label their headline units and expose selectable weekly bar details",
+    "All categories lines reconcile to platform totals and use a distinct dashed treatment",
     "Dashboard and index HTML match",
     "All-post CSV row counts reconcile to the dashboard summary"
   ]

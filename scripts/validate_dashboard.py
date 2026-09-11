@@ -82,6 +82,20 @@ for platform, categories in summary["category_weekly"].items():
                      if row["category"] == category)
         for metric in ("posts", "views", "eng"):
             assert sum(row[metric] for row in by_week.values() if row is not None) == total[metric]
+    for metric in ("posts", "views", "eng"):
+        assert sum(row[metric] for row in summary["category_totals"][platform]) == summary["totals"][platform][metric]
+    for week_key, week_start, week_end in category_weeks:
+        if week_start <= cutoff:
+            raw_rows = [row for row in summary["posts"]
+                        if row["platform"] == platform
+                        and week_start <= row["date"] <= min(week_end, cutoff)]
+            expected = {
+                "posts": len(raw_rows),
+                "views": sum(row["views"] for row in raw_rows),
+                "eng": sum(row["engagements"] for row in raw_rows),
+            }
+            for metric in ("posts", "views", "eng"):
+                assert sum(by_week[week_key][metric] for by_week in categories.values()) == expected[metric]
 
 dashboard = open(os.path.join(ROOT, "dashboard.html"), encoding="utf-8").read()
 index = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
@@ -97,6 +111,8 @@ assert "Deselect all" in dashboard
 assert "Select a bar for that week's exact stats." in dashboard
 assert "data-spark-platform=" in dashboard
 assert "spark-readout" in dashboard
+assert 'ALL_CATEGORIES="All categories"' in dashboard
+assert 'stroke-dasharray="8 4"' in dashboard
 
 with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="") as handle:
     post_rows = list(csv.DictReader(handle))
@@ -126,6 +142,7 @@ result = {
         "Category chart axes use readable dates and stop at each platform's latest included publish date",
         "Category charts include Show all and Deselect all controls",
         "Platform cards label their headline units and expose selectable weekly bar details",
+        "All categories lines reconcile to platform totals and use a distinct dashed treatment",
         "Dashboard and index HTML match",
         "All-post CSV row counts reconcile to the dashboard summary",
     ],

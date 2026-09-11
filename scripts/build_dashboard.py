@@ -95,7 +95,7 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 .tabs button{padding:7px 12px;cursor:pointer;white-space:nowrap}.tabs button.on{background:var(--ink);border-color:var(--ink);color:var(--page)}
 .category-charts{display:grid;gap:14px}.chart-card{overflow:hidden}.chart-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:8px}.chart-meta{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}.chart-reset{font:inherit;font-size:11px;border:1px solid var(--axis);border-radius:999px;background:var(--surface2);color:var(--ink);padding:4px 8px;cursor:pointer}
 .chart-wrap{overflow-x:auto;overscroll-behavior-inline:contain}.line-chart{display:block;width:auto;min-width:100%;height:auto}.category-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.category-key{font:inherit;font-size:11px;border:1px solid var(--grid);border-radius:999px;background:var(--surface2);color:var(--ink);padding:4px 8px;cursor:pointer}
+.category-key{font:inherit;font-size:11px;border:1px solid var(--grid);border-radius:999px;background:var(--surface2);color:var(--ink);padding:4px 8px;cursor:pointer}.category-key.total{font-weight:750;border-color:var(--category)}
 .category-key.off{opacity:.42}.category-key .swatch{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--category)}
 .controls{display:grid;grid-template-columns:minmax(210px,1fr) 180px;gap:10px;margin-bottom:10px}.select,input{padding:8px 10px;width:100%}
 .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.definition{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;font-size:12px}.definition b{color:var(--ink2)}
@@ -124,7 +124,7 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 
 <section><div class="section-head"><div><h2>Weekly category trends</h2><div class="note">Every available 2026 publish week for Instagram, YouTube, and TikTok; dates mark the start of each week.</div></div><div class="tabs" id="categoryMetricTabs"></div></div>
 <div class="category-charts" id="categoryTrendCharts"></div>
-<div class="note" style="margin-top:7px">Each chart uses its own scale and stops at that platform's latest included publish date. Select views, engagements, or posts; click a category label to show or hide its line. Scroll horizontally on smaller screens.</div></section>
+<div class="note" style="margin-top:7px">Each chart uses its own scale and stops at that platform's latest included publish date. The thicker dashed All categories line is the weekly platform total. Select views, engagements, or posts; click a category label to show or hide its line. Scroll horizontally on smaller screens.</div></section>
 
 <section><div class="section-head"><div><h2>Year-to-date category performance</h2><div class="note">Categories follow the reviewed labels in each source workbook.</div></div></div>
 <div class="card"><div class="tabs" id="categoryTabs"></div><div id="categories"></div></div></section>
@@ -141,7 +141,7 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 
 <div class="footer">Built from the four reviewed 2026 HOTB workbooks. Self-contained and usable offline; outbound post links require internet access.</div>
 </div><script>
-const D=__DATA__,PC=__PC__,PLATS=Object.keys(D.totals),TREND_PLATS=["Instagram","YouTube","TikTok"];
+const D=__DATA__,PC=__PC__,PLATS=Object.keys(D.totals),TREND_PLATS=["Instagram","YouTube","TikTok"],ALL_CATEGORIES="All categories";
 const CAT_COLORS=["#a51d2d","#2166ac","#2a9d8f","#d97706","#7c3aed","#0f766e","#c2410c","#be185d","#4d7c0f","#4338ca","#6b7280","#0891b2","#9333ea","#15803d"];
 const ALL_CATS=[...new Set(TREND_PLATS.flatMap(p=>Object.keys(D.categoryWeekly[p]||{})))].sort();
 const CAT_COLOR=Object.fromEntries(ALL_CATS.map((c,i)=>[c,CAT_COLORS[i%CAT_COLORS.length]]));
@@ -165,18 +165,20 @@ function categoryChart(platform){
  const metricLabels={views:"Views",eng:"Engagements",posts:"Posts"},cutoff=D.coverage[platform];
  const weeks=D.categoryWeeks.filter(week=>week[1]<=cutoff),weekKeys=weeks.map(week=>week[0]);
  const weekSpan=week=>`${chartDate(week[1])}–${chartDate(week[2]<cutoff?week[2]:cutoff)}`;
- const series=Object.entries(D.categoryWeekly[platform]||{}).map(([category,byWeek])=>({category,values:weekKeys.map(key=>byWeek[key]?.[categoryMetric]||0)}));
+ const categorySeries=Object.entries(D.categoryWeekly[platform]||{}).map(([category,byWeek])=>({category,isTotal:false,values:weekKeys.map(key=>byWeek[key]?.[categoryMetric]||0)}));
+ const series=[{category:ALL_CATEGORIES,isTotal:true,values:weekKeys.map((_,i)=>categorySeries.reduce((sum,item)=>sum+item.values[i],0))},...categorySeries];
  const visible=series.filter(s=>!hiddenCategories[platform].has(s.category)),scale=niceScale(Math.max(1,...visible.flatMap(s=>s.values))),max=scale.max,tickCount=Math.round(max/scale.step);
  const W=Math.max(920,weeks.length*27+94),H=350,L=72,R=22,T=20,B=78,innerW=W-L-R,innerH=H-T-B;
  const x=i=>L+(weeks.length===1?innerW/2:i*innerW/(weeks.length-1)),y=v=>T+innerH-(v/max)*innerH;
  const grid=Array.from({length:tickCount+1},(_,i)=>i/tickCount).map(r=>{const yy=y(max*r);return `<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="var(--grid)"/><text x="${L-10}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="11">${fmt(max*r)}</text>`}).join("");
  const xLabels=weeks.map((week,i)=>`<text transform="translate(${x(i)} ${H-B+18}) rotate(-55)" text-anchor="end" fill="var(--muted)" font-size="10">${esc(chartDate(week[1]))}</text>`).join("");
- const lines=visible.map(s=>{const color=CAT_COLOR[s.category],points=s.values.map((v,i)=>`${x(i)},${y(v)}`).join(" ");return `<g><polyline points="${points}" fill="none" stroke="${color}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round"/><title>${esc(s.category)} · ${metricLabels[categoryMetric]}</title>${s.values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${color}" stroke="var(--surface)" stroke-width="1.5"><title>${esc(s.category)} · ${esc(weekSpan(weeks[i]))}: ${full(v)} ${metricLabels[categoryMetric].toLowerCase()}</title></circle>`).join("")}</g>`}).join("");
+ const drawSeries=[...visible].sort((a,b)=>Number(a.isTotal)-Number(b.isTotal));
+ const lines=drawSeries.map(s=>{const color=s.isTotal?"var(--ink)":CAT_COLOR[s.category],points=s.values.map((v,i)=>`${x(i)},${y(v)}`).join(" "),width=s.isTotal?3.5:2.25,dashes=s.isTotal?' stroke-dasharray="8 4"':"";const marks=s.values.map((v,i)=>{const title=`<title>${esc(s.category)} · ${esc(weekSpan(weeks[i]))}: ${full(v)} ${metricLabels[categoryMetric].toLowerCase()}</title>`;return s.isTotal?`<rect x="${x(i)-4}" y="${y(v)-4}" width="8" height="8" rx="1" fill="var(--surface)" stroke="${color}" stroke-width="2">${title}</rect>`:`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${color}" stroke="var(--surface)" stroke-width="1.5">${title}</circle>`}).join("");return `<g data-series="${esc(s.category)}"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="${width}"${dashes} stroke-linejoin="round" stroke-linecap="round"/><title>${esc(s.category)} · ${metricLabels[categoryMetric]}</title>${marks}</g>`}).join("");
  const emptyState=visible.length?"":`<text x="${L+innerW/2}" y="${T+innerH/2}" text-anchor="middle" fill="var(--muted)" font-size="14">No categories selected — choose Show all</text>`;
- const legend=series.map(s=>`<button class="category-key ${hiddenCategories[platform].has(s.category)?"off":""}" data-platform="${esc(platform)}" data-category="${esc(s.category)}" aria-pressed="${!hiddenCategories[platform].has(s.category)}" style="--category:${CAT_COLOR[s.category]}"><span class="swatch"></span>${esc(s.category)}</button>`).join("");
+ const legend=series.map(s=>{const color=s.isTotal?"var(--ink)":CAT_COLOR[s.category];return `<button class="category-key ${s.isTotal?"total ":""}${hiddenCategories[platform].has(s.category)?"off":""}" data-platform="${esc(platform)}" data-category="${esc(s.category)}" aria-pressed="${!hiddenCategories[platform].has(s.category)}" style="--category:${color}"><span class="swatch"></span>${esc(s.category)}</button>`}).join("");
  const showAll=hiddenCategories[platform].size?`<button type="button" class="chart-reset" data-reset-platform="${esc(platform)}">Show all</button>`:"";
  const deselectAll=visible.length?`<button type="button" class="chart-reset" data-deselect-platform="${esc(platform)}">Deselect all</button>`:"";
- return `<div class="card chart-card"><div class="chart-head"><h3><span class="dot" style="--platform:${PC[platform]}"></span>${platform}</h3><div class="chart-meta"><span class="note">${metricLabels[categoryMetric]} per week · through ${esc(chartDate(cutoff))}</span>${showAll}${deselectAll}</div></div><div class="chart-wrap" data-scroll-platform="${esc(platform)}"><svg class="line-chart" width="${W}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${platform} all available 2026 weekly ${metricLabels[categoryMetric].toLowerCase()} by category">${grid}<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="var(--axis)"/><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="var(--axis)"/>${xLabels}${lines}${emptyState}</svg></div><div class="category-legend">${legend}</div></div>`;
+ return `<div class="card chart-card"><div class="chart-head"><h3><span class="dot" style="--platform:${PC[platform]}"></span>${platform}</h3><div class="chart-meta"><span class="note">${metricLabels[categoryMetric]} per week · through ${esc(chartDate(cutoff))}</span>${showAll}${deselectAll}</div></div><div class="chart-wrap" data-scroll-platform="${esc(platform)}"><svg class="line-chart" width="${W}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${platform} all available 2026 weekly ${metricLabels[categoryMetric].toLowerCase()} by category, including an All categories platform-total line">${grid}<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="var(--axis)"/><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="var(--axis)"/>${xLabels}${lines}${emptyState}</svg></div><div class="category-legend">${legend}</div></div>`;
 }
 function renderCategoryTrends(){
  const metricLabels={views:"Views",eng:"Engagements",posts:"Posts"};
@@ -187,7 +189,7 @@ function renderCategoryTrends(){
  document.querySelectorAll("#categoryMetricTabs button").forEach(button=>button.addEventListener("click",()=>{categoryMetric=button.dataset.metric;renderCategoryTrends()}));
  document.querySelectorAll(".category-key").forEach(button=>button.addEventListener("click",()=>{const hidden=hiddenCategories[button.dataset.platform],category=button.dataset.category;hidden.has(category)?hidden.delete(category):hidden.add(category);renderCategoryTrends()}));
  document.querySelectorAll("[data-reset-platform]").forEach(button=>button.addEventListener("click",()=>{hiddenCategories[button.dataset.resetPlatform].clear();renderCategoryTrends()}));
- document.querySelectorAll("[data-deselect-platform]").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.deselectPlatform,hidden=hiddenCategories[platform];Object.keys(D.categoryWeekly[platform]||{}).forEach(category=>hidden.add(category));renderCategoryTrends()}));
+ document.querySelectorAll("[data-deselect-platform]").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.deselectPlatform,hidden=hiddenCategories[platform];hidden.add(ALL_CATEGORIES);Object.keys(D.categoryWeekly[platform]||{}).forEach(category=>hidden.add(category));renderCategoryTrends()}));
 }
 
 const RS=D.scope,blend=rate(RS.eng,RS.views);
