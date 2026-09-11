@@ -67,17 +67,35 @@ assert summary["common_coverage_end"] == "2026-08-26"
 
 category_weeks = summary["category_weeks"]
 category_week_keys = [row[0] for row in category_weeks]
+trend_platforms = {"Instagram", "YouTube", "TikTok"}
+trend_posts = [post for post in summary["posts"] if post["platform"] in trend_platforms]
 assert len(category_weeks) == 37
 assert category_weeks[0] == ["2026-01-01", "2026-01-01", "2026-01-04"]
 assert category_weeks[-1] == ["2026-09-07", "2026-09-07", "2026-09-09"]
 for previous, current in zip(category_weeks, category_weeks[1:]):
     assert date.fromisoformat(current[1]) == date.fromisoformat(previous[2]) + timedelta(days=1)
+for post in trend_posts:
+    matches = [week_key for week_key, week_start, week_end in category_weeks
+               if week_start <= post["date"] <= week_end]
+    assert len(matches) == 1, (post["platform"], post["id"], post["date"], matches)
 for platform, categories in summary["category_weekly"].items():
+    assert "All categories" not in categories
     cutoff = summary["platform_coverage_end"][platform]
     for category, by_week in categories.items():
         assert list(by_week) == category_week_keys
-        for week_key, week_start, _ in category_weeks:
+        for week_key, week_start, week_end in category_weeks:
             assert (by_week[week_key] is None) == (week_start > cutoff)
+            if week_start <= cutoff:
+                raw_rows = [post for post in trend_posts
+                            if post["platform"] == platform and post["category"] == category
+                            and week_start <= post["date"] <= min(week_end, cutoff)]
+                expected = {
+                    "posts": len(raw_rows),
+                    "views": sum(post["views"] for post in raw_rows),
+                    "eng": sum(post["engagements"] for post in raw_rows),
+                }
+                for metric in ("posts", "views", "eng"):
+                    assert by_week[week_key][metric] == expected[metric]
         total = next(row for row in summary["category_totals"][platform]
                      if row["category"] == category)
         for metric in ("posts", "views", "eng"):
@@ -113,6 +131,10 @@ assert "data-spark-platform=" in dashboard
 assert "spark-readout" in dashboard
 assert 'ALL_CATEGORIES="All categories"' in dashboard
 assert 'stroke-dasharray="8 4"' in dashboard
+assert 'data-point-week=' in dashboard
+assert 'Posts behind this point' in dashboard
+assert 'Open video / post' in dashboard
+assert '"cw":"2026-01-01"' in dashboard
 
 with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="") as handle:
     post_rows = list(csv.DictReader(handle))
@@ -139,10 +161,13 @@ result = {
         "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
         "Headline week remains within common four-platform coverage",
         "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
+        "Every trend-platform post maps to exactly one category week",
+        "Every platform, category, and week point reconciles to its underlying post rows",
         "Category chart axes use readable dates and stop at each platform's latest included publish date",
         "Category charts include Show all and Deselect all controls",
         "Platform cards label their headline units and expose selectable weekly bar details",
         "All categories lines reconcile to platform totals and use a distinct dashed treatment",
+        "Selectable category points expose ranked contributing posts with exact publish dates and links",
         "Dashboard and index HTML match",
         "All-post CSV row counts reconcile to the dashboard summary",
     ],

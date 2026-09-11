@@ -99,10 +99,13 @@
     "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
     "Headline week remains within common four-platform coverage",
     "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
+    "Every trend-platform post maps to exactly one category week",
+    "Every platform, category, and week point reconciles to its underlying post rows",
     "Category chart axes use readable dates and stop at each platform's latest included publish date",
     "Category charts include Show all and Deselect all controls",
     "Platform cards label their headline units and expose selectable weekly bar details",
     "All categories lines reconcile to platform totals and use a distinct dashed treatment",
+    "Selectable category points expose ranked contributing posts with exact publish dates and links",
     "Dashboard and index HTML match",
     "All-post CSV row counts reconcile to the dashboard summary"
   ]

@@ -24,9 +24,14 @@ year = source["period"]["end"][:4]
 week_labels = {name: f"{name.replace('Week ', 'W')} · {span(start, end)}" for name, start, end in source["weeks"]}
 
 
+def category_week_key(post_date):
+    return next((key for key, start, end in source["category_weeks"]
+                 if start <= post_date <= end), "")
+
+
 def slim(post):
     return {
-        "p": post["platform"], "w": post["week"], "d": post["date"],
+        "p": post["platform"], "w": post["week"], "cw": category_week_key(post["date"]), "d": post["date"],
         "t": (post["title"] or "")[:220], "u": post["url"], "v": post["views"],
         "e": post["engagements"], "c": post["category"], "y": post["type"],
     }
@@ -97,12 +102,16 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 .chart-wrap{overflow-x:auto;overscroll-behavior-inline:contain}.line-chart{display:block;width:auto;min-width:100%;height:auto}.category-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .category-key{font:inherit;font-size:11px;border:1px solid var(--grid);border-radius:999px;background:var(--surface2);color:var(--ink);padding:4px 8px;cursor:pointer}.category-key.total{font-weight:750;border-color:var(--category)}
 .category-key.off{opacity:.42}.category-key .swatch{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--category)}
+.chart-point{cursor:pointer;outline:none}.point-hit{fill:transparent;pointer-events:all}.point-marker{pointer-events:none}.point-focus-ring{fill:none;stroke:transparent;pointer-events:none}.chart-point:hover .point-focus-ring,.chart-point:focus .point-focus-ring,.chart-point.selected .point-focus-ring{stroke:var(--accent);stroke-width:2.5}
+.point-help{margin-top:12px;padding-top:11px;border-top:1px solid var(--grid);font-size:12px;color:var(--muted)}.point-detail{margin-top:12px;padding-top:13px;border-top:1px solid var(--grid)}
+.point-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.point-detail-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:750}.point-detail-title{display:block;margin-top:2px;font-size:14px}.point-actions{text-align:right}.point-total{font-size:18px;font-weight:750;white-space:nowrap}.point-detail-note{font-size:11px;color:var(--muted);margin:5px 0 10px}.point-close{font:inherit;font-size:11px;border:0;background:transparent;color:var(--accent);padding:0;cursor:pointer}
+.point-posts{display:grid;gap:7px}.point-post{display:grid;grid-template-columns:25px minmax(0,1fr) auto;align-items:start;gap:9px;padding:9px 10px;border-radius:9px;background:var(--surface2)}.point-rank{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface);color:var(--ink2);font-size:10px;font-weight:750}.point-post-title{font-weight:650;line-height:1.3}.point-post-meta,.point-post-stats{font-size:10px;color:var(--muted);margin-top:3px}.point-post-stats{text-align:right;white-space:nowrap}.point-post-open{display:block;margin-top:4px;font-size:11px;font-weight:700}
 .controls{display:grid;grid-template-columns:minmax(210px,1fr) 180px;gap:10px;margin-bottom:10px}.select,input{padding:8px 10px;width:100%}
 .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.definition{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;font-size:12px}.definition b{color:var(--ink2)}
 .sources{margin:0;padding-left:18px}.sources li{margin:5px 0;color:var(--ink2)}
 .footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--axis);color:var(--muted);font-size:11px}
 @media(max-width:900px){.hero,.platform-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mast{display:block}.stamp{text-align:left;margin-top:18px}}
-@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid,.subscriber-card{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}.chart-head{align-items:flex-start;flex-direction:column;gap:8px}.chart-meta{justify-content:space-between;width:100%}}
+@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid,.subscriber-card{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}.chart-head{align-items:flex-start;flex-direction:column;gap:8px}.chart-meta{justify-content:space-between;width:100%}.point-detail-head{display:block}.point-total{margin-top:5px}.point-post{grid-template-columns:25px minmax(0,1fr)}.point-post-stats{grid-column:2;text-align:left;white-space:normal;margin-top:0}}
 @media print{body{padding:0;background:#fff}.card{box-shadow:none;break-inside:avoid}.tabs,.controls{display:none}.wrap{max-width:none}}
 </style></head><body><div class="wrap">
 <header class="mast"><div><div class="eyebrow">2026 social intelligence</div><h1>__BRAND__ performance dashboard</h1>
@@ -124,7 +133,7 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 
 <section><div class="section-head"><div><h2>Weekly category trends</h2><div class="note">Every available 2026 publish week for Instagram, YouTube, and TikTok; dates mark the start of each week.</div></div><div class="tabs" id="categoryMetricTabs"></div></div>
 <div class="category-charts" id="categoryTrendCharts"></div>
-<div class="note" style="margin-top:7px">Each chart uses its own scale and stops at that platform's latest included publish date. The thicker dashed All categories line is the weekly platform total. Select views, engagements, or posts; click a category label to show or hide its line. Scroll horizontally on smaller screens.</div></section>
+<div class="note" style="margin-top:7px">Each chart uses its own scale and stops at that platform's latest included publish date. The thicker dashed All categories line is the weekly platform total. Select any chart point—including a spike—to see the top videos or posts published that week. Scroll horizontally on smaller screens.</div></section>
 
 <section><div class="section-head"><div><h2>Year-to-date category performance</h2><div class="note">Categories follow the reviewed labels in each source workbook.</div></div></div>
 <div class="card"><div class="tabs" id="categoryTabs"></div><div id="categories"></div></div></section>
@@ -160,7 +169,32 @@ const spark=(platform,color)=>{const unit=D.definitions[platform].metric_label,s
 let categoryMetric="views";
 const hiddenCategories=Object.fromEntries(TREND_PLATS.map(p=>[p,new Set()]));
 const categoryScroll=Object.fromEntries(TREND_PLATS.map(p=>[p,0]));
+const categorySelection=Object.fromEntries(TREND_PLATS.map(p=>[p,null]));
+const categoryFocus=Object.fromEntries(TREND_PLATS.map(p=>[p,{category:ALL_CATEGORIES,week:D.categoryWeeks[0][0]}]));
+const safeUrl=url=>/^https?:\/\/[^\s]+$/i.test(url||"")?url:"";
+const pointPostCount=(platform,category,weekKey)=>category===ALL_CATEGORIES
+ ?Object.values(D.categoryWeekly[platform]||{}).reduce((sum,byWeek)=>sum+(byWeek[weekKey]?.posts||0),0)
+ :(D.categoryWeekly[platform]?.[category]?.[weekKey]?.posts||0);
 const niceScale=value=>{if(value<=0)return {max:1,step:1};const raw=value/4,power=10**Math.floor(Math.log10(raw)),fraction=raw/power,step=(fraction<1.5?1:fraction<3?2:fraction<7?5:10)*power;return {max:Math.ceil(value/step)*step,step}};
+function categoryPointPanel(platform,weeks,series){
+ const selection=categorySelection[platform],panelId=`point-detail-${platform.toLowerCase()}`;
+ const selectedSeries=selection&&series.find(item=>item.category===selection.category),weekIndex=selection?weeks.findIndex(week=>week[0]===selection.week):-1;
+ if(!selectedSeries||weekIndex<0||hiddenCategories[platform].has(selection.category))return `<div class="point-help" id="${panelId}" aria-live="polite">Select any point—including a spike—to see the top videos or posts published in that week. Keyboard: use arrow keys to move, then Enter or Space to select.</div>`;
+ const week=weeks[weekIndex],cutoff=D.coverage[platform],end=week[2]<cutoff?week[2]:cutoff,total=selectedSeries.values[weekIndex],metricLabel={views:"views",eng:"engagements",posts:"posts"}[categoryMetric];
+ const posts=D.posts.filter(post=>post.p===platform&&post.cw===week[0]&&(selection.category===ALL_CATEGORIES||post.c===selection.category));
+ const rankField=categoryMetric==="eng"?"e":"v",rankLabel=categoryMetric==="eng"?"engagements":"views";
+ const ranked=[...posts].sort((a,b)=>(b[rankField]-a[rankField])||(b.v-a.v)||(b.e-a.e)||a.d.localeCompare(b.d)||a.t.localeCompare(b.t)||a.u.localeCompare(b.u)).slice(0,3);
+ const partial=(Date.parse(end+"T00:00:00Z")-Date.parse(week[1]+"T00:00:00Z"))/86400000<6;
+ const detailNote=categoryMetric==="posts"
+  ?`${full(posts.length)} ${posts.length===1?"post was":"posts were"} published in this weekly point; the highest-view posts are shown below.`
+  :`Top contributors ranked by ${rankLabel}. These are current cumulative metrics grouped by publish week, so this identifies contributors—not when views or engagements were earned.`;
+ const postCards=ranked.map((post,i)=>{const url=safeUrl(post.u),title=(post.t||"").trim()||"(no title or text)",share=total?Math.round(1000*post[rankField]/total)/10:0;
+  const primary=categoryMetric==="eng"?`${full(post.e)} engagements`:`${full(post.v)} ${esc(D.definitions[platform].metric_label)}`;
+  const secondary=categoryMetric==="eng"?`${full(post.v)} ${esc(D.definitions[platform].metric_label)}`:`${full(post.e)} engagements`;
+  const contribution=categoryMetric==="posts"?secondary:`${secondary} · ${share}% of weekly ${rankLabel}`;
+  return `<article class="point-post"><div class="point-rank">${i+1}</div><div><div class="point-post-title">${url?`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(title)}</a>`:esc(title)}</div><div class="point-post-meta">${esc(chartDate(post.d))}, ${post.d.slice(0,4)} · ${esc(post.c)} · ${esc(post.y)}</div>${url?`<a class="point-post-open" href="${esc(url)}" target="_blank" rel="noopener">Open video / post ↗</a>`:""}</div><div class="point-post-stats"><strong>${primary}</strong><br>${contribution}</div></article>`}).join("");
+ return `<div class="point-detail" id="${panelId}" role="region" aria-label="${esc(platform)} selected chart point details" aria-live="polite"><div class="point-detail-head"><div><div class="point-detail-kicker">Posts behind this point${partial?" · Partial week":""}</div><strong class="point-detail-title">${esc(selection.category)} · ${esc(chartDate(week[1]))}–${esc(chartDate(end))}, ${week[1].slice(0,4)}</strong></div><div class="point-actions"><div class="point-total">${full(total)} ${metricLabel}</div><button type="button" class="point-close" data-clear-point="${esc(platform)}">Close details</button></div></div><div class="point-detail-note">${detailNote} Post dates below show the exact publish day.</div>${postCards?`<div class="point-posts">${postCards}</div>`:`<div class="note">No posts were published for this category and week.</div>`}</div>`;
+}
 function categoryChart(platform){
  const metricLabels={views:"Views",eng:"Engagements",posts:"Posts"},cutoff=D.coverage[platform];
  const weeks=D.categoryWeeks.filter(week=>week[1]<=cutoff),weekKeys=weeks.map(week=>week[0]);
@@ -168,28 +202,66 @@ function categoryChart(platform){
  const categorySeries=Object.entries(D.categoryWeekly[platform]||{}).map(([category,byWeek])=>({category,isTotal:false,values:weekKeys.map(key=>byWeek[key]?.[categoryMetric]||0)}));
  const series=[{category:ALL_CATEGORIES,isTotal:true,values:weekKeys.map((_,i)=>categorySeries.reduce((sum,item)=>sum+item.values[i],0))},...categorySeries];
  const visible=series.filter(s=>!hiddenCategories[platform].has(s.category)),scale=niceScale(Math.max(1,...visible.flatMap(s=>s.values))),max=scale.max,tickCount=Math.round(max/scale.step);
+ let focusState=categoryFocus[platform];
+ if(!visible.some(item=>item.category===focusState?.category))focusState={category:visible[0]?.category,week:focusState?.week||weekKeys[0]};
+ if(!weekKeys.includes(focusState?.week))focusState={category:focusState?.category,week:weekKeys[0]};
+ categoryFocus[platform]=visible.length?focusState:null;
  const W=Math.max(920,weeks.length*27+94),H=350,L=72,R=22,T=20,B=78,innerW=W-L-R,innerH=H-T-B;
  const x=i=>L+(weeks.length===1?innerW/2:i*innerW/(weeks.length-1)),y=v=>T+innerH-(v/max)*innerH;
  const grid=Array.from({length:tickCount+1},(_,i)=>i/tickCount).map(r=>{const yy=y(max*r);return `<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="var(--grid)"/><text x="${L-10}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="11">${fmt(max*r)}</text>`}).join("");
  const xLabels=weeks.map((week,i)=>`<text transform="translate(${x(i)} ${H-B+18}) rotate(-55)" text-anchor="end" fill="var(--muted)" font-size="10">${esc(chartDate(week[1]))}</text>`).join("");
  const drawSeries=[...visible].sort((a,b)=>Number(a.isTotal)-Number(b.isTotal));
- const lines=drawSeries.map(s=>{const color=s.isTotal?"var(--ink)":CAT_COLOR[s.category],points=s.values.map((v,i)=>`${x(i)},${y(v)}`).join(" "),width=s.isTotal?3.5:2.25,dashes=s.isTotal?' stroke-dasharray="8 4"':"";const marks=s.values.map((v,i)=>{const title=`<title>${esc(s.category)} · ${esc(weekSpan(weeks[i]))}: ${full(v)} ${metricLabels[categoryMetric].toLowerCase()}</title>`;return s.isTotal?`<rect x="${x(i)-4}" y="${y(v)-4}" width="8" height="8" rx="1" fill="var(--surface)" stroke="${color}" stroke-width="2">${title}</rect>`:`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${color}" stroke="var(--surface)" stroke-width="1.5">${title}</circle>`}).join("");return `<g data-series="${esc(s.category)}"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="${width}"${dashes} stroke-linejoin="round" stroke-linecap="round"/><title>${esc(s.category)} · ${metricLabels[categoryMetric]}</title>${marks}</g>`}).join("");
+ const lines=drawSeries.map(s=>{const color=s.isTotal?"var(--ink)":CAT_COLOR[s.category],points=s.values.map((v,i)=>`${x(i)},${y(v)}`).join(" "),width=s.isTotal?3.5:2.25,dashes=s.isTotal?' stroke-dasharray="8 4"':"",seriesIndex=series.indexOf(s);const marks=s.values.map((v,i)=>{const selected=categorySelection[platform]?.category===s.category&&categorySelection[platform]?.week===weekKeys[i],focused=focusState?.category===s.category&&focusState?.week===weekKeys[i],postCount=pointPostCount(platform,s.category,weekKeys[i]);const valueText=categoryMetric==="posts"?`${full(v)} posts published`:`${full(v)} ${metricLabels[categoryMetric].toLowerCase()} from ${full(postCount)} ${postCount===1?"post":"posts"}`;const label=`${platform}, ${s.category}, ${weekSpan(weeks[i])}, ${weeks[i][1].slice(0,4)}: ${valueText}. Select to show top contributors.`;const marker=s.isTotal?`<rect class="point-marker" x="${x(i)-4}" y="${y(v)-4}" width="8" height="8" rx="1" fill="var(--surface)" stroke="${color}" stroke-width="2"/>`:`<circle class="point-marker" cx="${x(i)}" cy="${y(v)}" r="3" fill="${color}" stroke="var(--surface)" stroke-width="1.5"/>`;return `<g class="chart-point${selected?" selected":""}" role="button" tabindex="${focused?0:-1}" focusable="true" aria-pressed="${selected}" aria-label="${esc(label)}" data-point-platform="${esc(platform)}" data-point-category="${esc(s.category)}" data-point-week="${esc(weekKeys[i])}" data-week-index="${i}" data-series-index="${seriesIndex}" data-point-x="${x(i)}"><title>${esc(label)}</title><circle class="point-hit" cx="${x(i)}" cy="${y(v)}" r="12"/><circle class="point-focus-ring" cx="${x(i)}" cy="${y(v)}" r="8"/>${marker}</g>`}).join("");return `<g data-series="${esc(s.category)}"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="${width}"${dashes} stroke-linejoin="round" stroke-linecap="round"/><title>${esc(s.category)} · ${metricLabels[categoryMetric]}</title>${marks}</g>`}).join("");
+ const selectedWeekIndex=categorySelection[platform]&&visible.some(item=>item.category===categorySelection[platform].category)?weekKeys.indexOf(categorySelection[platform].week):-1;
+ const selectionGuide=selectedWeekIndex>=0?`<line x1="${x(selectedWeekIndex)}" y1="${T}" x2="${x(selectedWeekIndex)}" y2="${H-B}" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="2 4" opacity=".72"/>`:"";
  const emptyState=visible.length?"":`<text x="${L+innerW/2}" y="${T+innerH/2}" text-anchor="middle" fill="var(--muted)" font-size="14">No categories selected — choose Show all</text>`;
  const legend=series.map(s=>{const color=s.isTotal?"var(--ink)":CAT_COLOR[s.category];return `<button class="category-key ${s.isTotal?"total ":""}${hiddenCategories[platform].has(s.category)?"off":""}" data-platform="${esc(platform)}" data-category="${esc(s.category)}" aria-pressed="${!hiddenCategories[platform].has(s.category)}" style="--category:${color}"><span class="swatch"></span>${esc(s.category)}</button>`}).join("");
  const showAll=hiddenCategories[platform].size?`<button type="button" class="chart-reset" data-reset-platform="${esc(platform)}">Show all</button>`:"";
  const deselectAll=visible.length?`<button type="button" class="chart-reset" data-deselect-platform="${esc(platform)}">Deselect all</button>`:"";
- return `<div class="card chart-card"><div class="chart-head"><h3><span class="dot" style="--platform:${PC[platform]}"></span>${platform}</h3><div class="chart-meta"><span class="note">${metricLabels[categoryMetric]} per week · through ${esc(chartDate(cutoff))}</span>${showAll}${deselectAll}</div></div><div class="chart-wrap" data-scroll-platform="${esc(platform)}"><svg class="line-chart" width="${W}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${platform} all available 2026 weekly ${metricLabels[categoryMetric].toLowerCase()} by category, including an All categories platform-total line">${grid}<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="var(--axis)"/><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="var(--axis)"/>${xLabels}${lines}${emptyState}</svg></div><div class="category-legend">${legend}</div></div>`;
+ return `<div class="card chart-card"><div class="chart-head"><h3><span class="dot" style="--platform:${PC[platform]}"></span>${platform}</h3><div class="chart-meta"><span class="note">${metricLabels[categoryMetric]} per week · through ${esc(chartDate(cutoff))}</span>${showAll}${deselectAll}</div></div><div class="chart-wrap" data-scroll-platform="${esc(platform)}"><svg class="line-chart" width="${W}" viewBox="0 0 ${W} ${H}" role="group" aria-label="${platform} all available 2026 weekly ${metricLabels[categoryMetric].toLowerCase()} by category, including an All categories platform-total line. Select a point to show its top posts.">${grid}<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="var(--axis)"/><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="var(--axis)"/>${xLabels}${selectionGuide}${lines}${emptyState}</svg></div><div class="category-legend">${legend}</div>${categoryPointPanel(platform,weeks,series)}</div>`;
 }
-function renderCategoryTrends(){
+function restoreCategoryFocus(target){
+ if(!target)return;
+ let element=null;
+ if(target.kind==="metric")element=[...document.querySelectorAll("#categoryMetricTabs button")].find(item=>item.dataset.metric===target.metric);
+ if(target.kind==="legend")element=[...document.querySelectorAll(".category-key")].find(item=>item.dataset.platform===target.platform&&item.dataset.category===target.category);
+ if(target.kind==="point")element=[...document.querySelectorAll(".chart-point")].find(item=>item.dataset.pointPlatform===target.platform&&item.dataset.pointCategory===target.category&&item.dataset.pointWeek===target.week);
+ element?.focus({preventScroll:true});
+}
+function moveCategoryPointFocus(point,key){
+ const card=point.closest(".chart-card"),points=[...card.querySelectorAll(".chart-point")],weekIndex=Number(point.dataset.weekIndex),seriesIndex=Number(point.dataset.seriesIndex),seriesIndexes=[...new Set(points.map(item=>Number(item.dataset.seriesIndex)))].sort((a,b)=>a-b);
+ let nextWeek=weekIndex,nextSeries=seriesIndex;
+ if(key==="ArrowLeft")nextWeek=Math.max(0,weekIndex-1);
+ if(key==="ArrowRight")nextWeek=Math.min(D.categoryWeeks.length-1,weekIndex+1);
+ if(key==="Home")nextWeek=0;
+ if(key==="End")nextWeek=Math.max(...points.filter(item=>Number(item.dataset.seriesIndex)===seriesIndex).map(item=>Number(item.dataset.weekIndex)));
+ if(key==="ArrowUp")nextSeries=seriesIndexes[Math.max(0,seriesIndexes.indexOf(seriesIndex)-1)];
+ if(key==="ArrowDown")nextSeries=seriesIndexes[Math.min(seriesIndexes.length-1,seriesIndexes.indexOf(seriesIndex)+1)];
+ const target=points.find(item=>Number(item.dataset.weekIndex)===nextWeek&&Number(item.dataset.seriesIndex)===nextSeries);
+ if(!target)return;
+ point.setAttribute("tabindex","-1");target.setAttribute("tabindex","0");
+ categoryFocus[target.dataset.pointPlatform]={category:target.dataset.pointCategory,week:target.dataset.pointWeek};
+ target.focus({preventScroll:true});
+ const wrap=card.querySelector(".chart-wrap"),x=Number(target.dataset.pointX);wrap.scrollTo({left:Math.max(0,x-wrap.clientWidth/2),behavior:"smooth"});
+}
+function selectCategoryPoint(point){
+ const platform=point.dataset.pointPlatform,next={category:point.dataset.pointCategory,week:point.dataset.pointWeek},current=categorySelection[platform];
+ categoryFocus[platform]=next;categorySelection[platform]=current?.category===next.category&&current?.week===next.week?null:next;
+ renderCategoryTrends({kind:"point",platform,...next});
+}
+function renderCategoryTrends(focusTarget){
  const metricLabels={views:"Views",eng:"Engagements",posts:"Posts"};
  document.querySelectorAll("#categoryTrendCharts .chart-wrap").forEach(wrap=>{categoryScroll[wrap.dataset.scrollPlatform]=wrap.scrollLeft});
  document.getElementById("categoryMetricTabs").innerHTML=Object.entries(metricLabels).map(([key,label])=>`<button data-metric="${key}" class="${categoryMetric===key?"on":""}">${label}</button>`).join("");
  document.getElementById("categoryTrendCharts").innerHTML=TREND_PLATS.map(categoryChart).join("");
  document.querySelectorAll("#categoryTrendCharts .chart-wrap").forEach(wrap=>{wrap.scrollLeft=categoryScroll[wrap.dataset.scrollPlatform]||0});
- document.querySelectorAll("#categoryMetricTabs button").forEach(button=>button.addEventListener("click",()=>{categoryMetric=button.dataset.metric;renderCategoryTrends()}));
- document.querySelectorAll(".category-key").forEach(button=>button.addEventListener("click",()=>{const hidden=hiddenCategories[button.dataset.platform],category=button.dataset.category;hidden.has(category)?hidden.delete(category):hidden.add(category);renderCategoryTrends()}));
- document.querySelectorAll("[data-reset-platform]").forEach(button=>button.addEventListener("click",()=>{hiddenCategories[button.dataset.resetPlatform].clear();renderCategoryTrends()}));
- document.querySelectorAll("[data-deselect-platform]").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.deselectPlatform,hidden=hiddenCategories[platform];hidden.add(ALL_CATEGORIES);Object.keys(D.categoryWeekly[platform]||{}).forEach(category=>hidden.add(category));renderCategoryTrends()}));
+ document.querySelectorAll("#categoryMetricTabs button").forEach(button=>button.addEventListener("click",()=>{categoryMetric=button.dataset.metric;renderCategoryTrends({kind:"metric",metric:categoryMetric})}));
+ document.querySelectorAll(".category-key").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.platform,hidden=hiddenCategories[platform],category=button.dataset.category,wasHidden=hidden.has(category);wasHidden?hidden.delete(category):hidden.add(category);if(!wasHidden&&categorySelection[platform]?.category===category)categorySelection[platform]=null;renderCategoryTrends({kind:"legend",platform,category})}));
+ document.querySelectorAll("[data-reset-platform]").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.resetPlatform;hiddenCategories[platform].clear();renderCategoryTrends({kind:"legend",platform,category:ALL_CATEGORIES})}));
+ document.querySelectorAll("[data-deselect-platform]").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.deselectPlatform,hidden=hiddenCategories[platform];hidden.add(ALL_CATEGORIES);Object.keys(D.categoryWeekly[platform]||{}).forEach(category=>hidden.add(category));categorySelection[platform]=null;renderCategoryTrends({kind:"legend",platform,category:ALL_CATEGORIES})}));
+ document.querySelectorAll("[data-clear-point]").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.clearPoint,current=categorySelection[platform];categorySelection[platform]=null;renderCategoryTrends(current?{kind:"point",platform,...current}:null)}));
+ document.querySelectorAll(".chart-point").forEach(point=>{point.addEventListener("focus",()=>{categoryFocus[point.dataset.pointPlatform]={category:point.dataset.pointCategory,week:point.dataset.pointWeek}});point.addEventListener("pointerdown",event=>{point._pointStart={x:event.clientX,y:event.clientY};point._pointMoved=false});point.addEventListener("pointermove",event=>{if(point._pointStart&&Math.hypot(event.clientX-point._pointStart.x,event.clientY-point._pointStart.y)>8)point._pointMoved=true});point.addEventListener("pointercancel",()=>{point._pointMoved=true});point.addEventListener("click",()=>{if(point._pointMoved){point._pointMoved=false;return}selectCategoryPoint(point)});point.addEventListener("keydown",event=>{if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End"].includes(event.key)){event.preventDefault();moveCategoryPointFocus(point,event.key)}else if(event.key==="Enter"||event.key===" "){event.preventDefault();selectCategoryPoint(point)}})});
+ restoreCategoryFocus(focusTarget);
 }
 
 const RS=D.scope,blend=rate(RS.eng,RS.views);
