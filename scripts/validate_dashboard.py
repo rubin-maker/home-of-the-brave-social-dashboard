@@ -93,6 +93,7 @@ assert "Every available 2026 publish week" in dashboard
 assert "dates mark the start of each week" in dashboard
 assert "all available 2026 weekly" in dashboard
 assert "No categories selected — choose Show all" in dashboard
+assert "Deselect all" in dashboard
 
 with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="") as handle:
     post_rows = list(csv.DictReader(handle))
@@ -119,7 +120,8 @@ result = {
         "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
         "Headline week remains within common four-platform coverage",
         "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
-        "Category chart axes use readable dates and stop at each platform's source cutoff",
+        "Category chart axes use readable dates and stop at each platform's latest included publish date",
+        "Category charts include Show all and Deselect all controls",
         "Dashboard and index HTML match",
         "All-post CSV row counts reconcile to the dashboard summary",
     ],

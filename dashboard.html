@@ -40,7 +40,7 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 .sources{margin:0;padding-left:18px}.sources li{margin:5px 0;color:var(--ink2)}
 .footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--axis);color:var(--muted);font-size:11px}
 @media(max-width:900px){.hero,.platform-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mast{display:block}.stamp{text-align:left;margin-top:18px}}
-@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid,.subscriber-card{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}}
+@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid,.subscriber-card{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}.chart-head{align-items:flex-start;flex-direction:column;gap:8px}.chart-meta{justify-content:space-between;width:100%}}
 @media print{body{padding:0;background:#fff}.card{box-shadow:none;break-inside:avoid}.tabs,.controls{display:none}.wrap{max-width:none}}
 </style></head><body><div class="wrap">
 <header class="mast"><div><div class="eyebrow">2026 social intelligence</div><h1>Home of the Brave performance dashboard</h1>
@@ -108,8 +108,9 @@ function categoryChart(platform){
  const lines=visible.map(s=>{const color=CAT_COLOR[s.category],points=s.values.map((v,i)=>`${x(i)},${y(v)}`).join(" ");return `<g><polyline points="${points}" fill="none" stroke="${color}" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round"/><title>${esc(s.category)} · ${metricLabels[categoryMetric]}</title>${s.values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${color}" stroke="var(--surface)" stroke-width="1.5"><title>${esc(s.category)} · ${esc(weekSpan(weeks[i]))}: ${full(v)} ${metricLabels[categoryMetric].toLowerCase()}</title></circle>`).join("")}</g>`}).join("");
  const emptyState=visible.length?"":`<text x="${L+innerW/2}" y="${T+innerH/2}" text-anchor="middle" fill="var(--muted)" font-size="14">No categories selected — choose Show all</text>`;
  const legend=series.map(s=>`<button class="category-key ${hiddenCategories[platform].has(s.category)?"off":""}" data-platform="${esc(platform)}" data-category="${esc(s.category)}" aria-pressed="${!hiddenCategories[platform].has(s.category)}" style="--category:${CAT_COLOR[s.category]}"><span class="swatch"></span>${esc(s.category)}</button>`).join("");
- const reset=hiddenCategories[platform].size?`<button type="button" class="chart-reset" data-reset-platform="${esc(platform)}">Show all</button>`:"";
- return `<div class="card chart-card"><div class="chart-head"><h3><span class="dot" style="--platform:${PC[platform]}"></span>${platform}</h3><div class="chart-meta"><span class="note">${metricLabels[categoryMetric]} per week · through ${esc(chartDate(cutoff))}</span>${reset}</div></div><div class="chart-wrap" data-scroll-platform="${esc(platform)}"><svg class="line-chart" width="${W}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${platform} all available 2026 weekly ${metricLabels[categoryMetric].toLowerCase()} by category">${grid}<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="var(--axis)"/><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="var(--axis)"/>${xLabels}${lines}${emptyState}</svg></div><div class="category-legend">${legend}</div></div>`;
+ const showAll=hiddenCategories[platform].size?`<button type="button" class="chart-reset" data-reset-platform="${esc(platform)}">Show all</button>`:"";
+ const deselectAll=visible.length?`<button type="button" class="chart-reset" data-deselect-platform="${esc(platform)}">Deselect all</button>`:"";
+ return `<div class="card chart-card"><div class="chart-head"><h3><span class="dot" style="--platform:${PC[platform]}"></span>${platform}</h3><div class="chart-meta"><span class="note">${metricLabels[categoryMetric]} per week · through ${esc(chartDate(cutoff))}</span>${showAll}${deselectAll}</div></div><div class="chart-wrap" data-scroll-platform="${esc(platform)}"><svg class="line-chart" width="${W}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${platform} all available 2026 weekly ${metricLabels[categoryMetric].toLowerCase()} by category">${grid}<line x1="${L}" y1="${T}" x2="${L}" y2="${H-B}" stroke="var(--axis)"/><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="var(--axis)"/>${xLabels}${lines}${emptyState}</svg></div><div class="category-legend">${legend}</div></div>`;
 }
 function renderCategoryTrends(){
  const metricLabels={views:"Views",eng:"Engagements",posts:"Posts"};
@@ -119,7 +120,8 @@ function renderCategoryTrends(){
  document.querySelectorAll("#categoryTrendCharts .chart-wrap").forEach(wrap=>{wrap.scrollLeft=categoryScroll[wrap.dataset.scrollPlatform]||0});
  document.querySelectorAll("#categoryMetricTabs button").forEach(button=>button.addEventListener("click",()=>{categoryMetric=button.dataset.metric;renderCategoryTrends()}));
  document.querySelectorAll(".category-key").forEach(button=>button.addEventListener("click",()=>{const hidden=hiddenCategories[button.dataset.platform],category=button.dataset.category;hidden.has(category)?hidden.delete(category):hidden.add(category);renderCategoryTrends()}));
- document.querySelectorAll(".chart-reset").forEach(button=>button.addEventListener("click",()=>{hiddenCategories[button.dataset.resetPlatform].clear();renderCategoryTrends()}));
+ document.querySelectorAll("[data-reset-platform]").forEach(button=>button.addEventListener("click",()=>{hiddenCategories[button.dataset.resetPlatform].clear();renderCategoryTrends()}));
+ document.querySelectorAll("[data-deselect-platform]").forEach(button=>button.addEventListener("click",()=>{const platform=button.dataset.deselectPlatform,hidden=hiddenCategories[platform];Object.keys(D.categoryWeekly[platform]||{}).forEach(category=>hidden.add(category));renderCategoryTrends()}));
 }
 
 const RS=D.scope,blend=rate(RS.eng,RS.views);
