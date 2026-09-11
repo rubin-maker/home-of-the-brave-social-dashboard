@@ -31,7 +31,7 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 2. Confirm the reported week is fully complete for all four sources.
 3. Scan the final days in `all_posts.csv` for unexpected zero-value or duplicate rows.
 4. Check that old weeks do not move unexpectedly when replacing a workbook.
-5. Open `dashboard.html` and test the category tabs, **Show all** and **Deselect all** controls, full-year category-chart scrolling and date labels, week tabs, platform filter, search, and outbound post links.
+5. Open `dashboard.html` and test the selectable eight-week platform bars, category tabs, **Show all** and **Deselect all** controls, full-year category-chart scrolling and date labels, week tabs, platform filter, search, and outbound post links.
 
 ## 2026 source coverage in this build
 

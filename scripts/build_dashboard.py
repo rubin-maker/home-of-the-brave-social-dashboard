@@ -81,12 +81,12 @@ h2{font-size:18px;line-height:1.25;margin:0 0 5px}h3{font-size:14px;margin:0 0 9
 section{margin-top:40px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:12px}.note{font-size:12px;color:var(--muted)}
 .grid{display:grid;gap:14px}.hero{grid-template-columns:repeat(4,minmax(0,1fr))}.platform-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
-.tile .label{font-size:11px;text-transform:uppercase;letter-spacing:.065em;color:var(--ink2);font-weight:700}.tile .value{font-size:30px;font-weight:720;letter-spacing:-.035em;margin-top:5px}
+.tile .label{font-size:11px;text-transform:uppercase;letter-spacing:.065em;color:var(--ink2);font-weight:700}.tile .value{font-size:30px;font-weight:720;letter-spacing:-.035em;margin-top:5px}.tile .value-unit{font-size:14px;font-weight:700;letter-spacing:0;color:var(--ink2);margin-left:2px}
 .tile .detail{font-size:12px;color:var(--muted);margin-top:4px}.platform-card{position:relative;overflow:hidden}.platform-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--platform)}
 .subscriber-card{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);align-items:center;gap:20px}.subscriber-card .value{font-variant-numeric:tabular-nums}.subscriber-card .detail{max-width:75ch}
 .subscriber-weekly-card{margin-top:14px}.subscriber-weekly-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}.subscriber-range{display:flex;align-items:center;gap:9px;flex-wrap:wrap;max-width:100%;font-size:12px;color:var(--ink2)}.subscriber-range .select{width:auto;max-width:100%;min-width:0}.subscriber-weekly-card .note{margin-bottom:10px}
 .platform-name{font-weight:730}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--platform)}
-.spark{display:block;width:100%;height:38px;margin-top:12px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
+.spark-help{font-size:11px;color:var(--muted);margin-top:9px}.spark{display:block;width:100%;height:38px;margin-top:4px;overflow:visible}.spark-bar{cursor:pointer;outline:none}.spark-hit{fill:transparent;pointer-events:all}.spark-fill{pointer-events:none;transition:opacity .14s ease,stroke-width .14s ease}.spark-bar:hover .spark-fill,.spark-bar:focus .spark-fill,.spark-bar.selected .spark-fill{opacity:1;stroke:var(--ink);stroke-width:1.4}.spark-readout{min-height:53px;margin-top:8px;padding-top:8px;border-top:1px solid var(--grid);font-size:11px;color:var(--ink2);font-variant-numeric:tabular-nums}.spark-readout strong{display:block;color:var(--ink);font-size:11px;margin-bottom:2px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
 th{color:var(--ink2);font-size:11px;text-transform:uppercase;letter-spacing:.045em;font-weight:700;text-align:left;padding:9px 10px;border-bottom:1px solid var(--axis);white-space:nowrap}
 td{padding:9px 10px;border-bottom:1px solid var(--grid);vertical-align:top}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1px solid var(--axis)}.delta{display:block;font-size:10px;font-weight:700;margin-top:1px}
@@ -151,7 +151,11 @@ const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&g
 const chartDate=s=>new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"UTC"}).format(new Date(s+"T00:00:00Z"));
 const rate=(e,v)=>v?(100*e/v).toFixed(2)+"%":"—";
 const delta=(a,b)=>!a?"—":`${b>=a?"+":""}${Math.round(100*(b-a)/a)}%`;
-const spark=(vals,color)=>{const max=Math.max(...vals,1);return `<svg class="spark" viewBox="0 0 160 38" preserveAspectRatio="none" aria-label="Eight-week trend">${vals.map((v,i)=>{const h=Math.max(1,32*v/max);return `<rect x="${i*20+2}" y="${36-h}" width="14" height="${h}" rx="2" fill="${color}" opacity="${i===vals.length-1?1:.48}"/>`}).join("")}</svg>`};
+const sparkWeeks=Object.fromEntries(D.weeks.map(week=>[week[0],week]));
+const sparkSelection=Object.fromEntries(PLATS.map(platform=>[platform,D.reportWeek]));
+const sparkSummary=(platform,week)=>{const row=D.weekly[week][platform],unit=D.definitions[platform].metric_label;return {value:`${fmt(row.views)} <span class="value-unit">${esc(unit)}</span>`,detail:`${fmt(row.eng)} engagements · ${row.posts} posts · ${row.er??"—"}% rate`}};
+const sparkDetail=(platform,week)=>{const row=D.weekly[week][platform],dates=sparkWeeks[week],unit=D.definitions[platform].metric_label;return `<strong>Selected week · ${esc(chartDate(dates[1]))}–${esc(chartDate(dates[2]))}</strong><span>${full(row.views)} ${unit} · ${full(row.eng)} engagements · ${full(row.posts)} posts · ${row.er??"—"}% rate</span>`};
+const spark=(platform,color)=>{const unit=D.definitions[platform].metric_label,selected=sparkSelection[platform],values=D.weeks.map(week=>D.weekly[week[0]][platform].views),max=Math.max(...values,1);return `<svg class="spark" viewBox="0 0 160 38" preserveAspectRatio="none" role="group" aria-label="${esc(platform)} eight-week ${esc(unit)} trend. Select a bar for exact weekly stats.">${D.weeks.map((week,i)=>{const row=D.weekly[week[0]][platform],value=row.views,h=Math.max(1,32*value/max),isSelected=week[0]===selected,label=`${platform}, ${chartDate(week[1])}–${chartDate(week[2])}, ${week[2].slice(0,4)}: ${full(value)} ${unit}, ${full(row.eng)} engagements, ${full(row.posts)} posts, ${row.er??"—"}% engagement rate`;return `<g class="spark-bar ${isSelected?"selected":""}" role="button" tabindex="0" focusable="true" aria-pressed="${isSelected}" aria-label="${esc(label)}" data-spark-platform="${esc(platform)}" data-spark-week="${esc(week[0])}"><rect class="spark-hit" x="${i*20}" y="0" width="20" height="38"/><rect class="spark-fill" x="${i*20+2}" y="${36-h}" width="14" height="${h}" rx="2" fill="${color}" opacity=".48"/><title>${esc(label)}</title></g>`}).join("")}</svg>`};
 
 let categoryMetric="views";
 const hiddenCategories=Object.fromEntries(TREND_PLATS.map(p=>[p,new Set()]));
@@ -209,11 +213,14 @@ document.getElementById("hero").innerHTML=[
  ["Avg. per post",fmt(Math.round(RS.views/Math.max(RS.posts,1))),"views / impressions"],
 ].map(x=>`<div class="card tile"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="detail">${x[2]}</div></div>`).join("");
 
-document.getElementById("platforms").innerHTML=PLATS.map(p=>({p,t:RS.totals[p]})).sort((a,b)=>b.t.views-a.t.views).map(({p,t})=>{
- const vals=D.weeks.map(w=>D.weekly[w[0]][p].views),unit=D.definitions[p].metric_label;
+document.getElementById("platforms").innerHTML=PLATS.slice().sort((a,b)=>RS.totals[b].views-RS.totals[a].views).map(p=>{
+ const unit=D.definitions[p].metric_label,selected=sparkSummary(p,sparkSelection[p]);
  return `<div class="card tile platform-card" style="--platform:${PC[p]}"><div class="label"><span class="dot"></span><span class="platform-name">${p}</span></div>
- <div class="value">${fmt(t.views)}</div><div class="detail">${unit} · ${fmt(t.eng)} engagements · ${t.posts} posts · ${t.er??"—"}% rate</div>
- ${spark(vals,PC[p])}<div class="detail">YTD: ${fmt(D.totals[p].views)} ${unit} across ${full(D.totals[p].posts)} posts</div></div>`}).join("");
+ <div class="value">${selected.value}</div><div class="detail platform-week-detail">${selected.detail}</div>
+ <div class="spark-help">Select a bar for that week's exact stats.</div>${spark(p,PC[p])}<div class="spark-readout" aria-live="polite">${sparkDetail(p,sparkSelection[p])}</div><div class="detail">YTD: ${fmt(D.totals[p].views)} ${unit} across ${full(D.totals[p].posts)} posts</div></div>`}).join("");
+
+function selectSparkBar(bar){const platform=bar.dataset.sparkPlatform,week=bar.dataset.sparkWeek,card=bar.closest(".platform-card"),summary=sparkSummary(platform,week);sparkSelection[platform]=week;card.querySelectorAll(".spark-bar").forEach(candidate=>{const selected=candidate.dataset.sparkWeek===week;candidate.classList.toggle("selected",selected);candidate.setAttribute("aria-pressed",String(selected))});card.querySelector(".value").innerHTML=summary.value;card.querySelector(".platform-week-detail").textContent=summary.detail;card.querySelector(".spark-readout").innerHTML=sparkDetail(platform,week)}
+document.querySelectorAll(".spark-bar").forEach(bar=>{bar.addEventListener("click",()=>selectSparkBar(bar));bar.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();selectSparkBar(bar)}})});
 
 (function(){let h=`<table><thead><tr><th>Platform</th>${D.weeks.map(w=>`<th class="n">${esc(D.wlbl[w[0]])}</th>`).join("")}</tr></thead><tbody>`;
  for(const p of PLATS){const vals=D.weeks.map(w=>D.weekly[w[0]][p].views);h+=`<tr><td><span class="dot" style="--platform:${PC[p]}"></span>${p}</td>`+
