@@ -22,7 +22,7 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 - The reporting week is the latest fully closed week supported by all four platforms. It uses the earliest platform coverage end, while full-file totals retain each platform's own available period.
 - The trend table keeps the latest eight complete weeks.
 - Each platform card's mini bars use that platform's latest eight consecutive publish weeks through its own source cutoff, including zero-post weeks. A cutoff in the middle of a week produces an outlined partial final bar labeled with its exact covered dates and day count.
-- The platform-card headline defaults to the shared Aug 17–23 complete comparison week so the four cards remain directly comparable. Selecting any mini bar updates only that card with the chosen week's exact metrics and coverage status.
+- Each platform-card headline defaults to that source's latest complete week and shows the exact date range; the hero and trend table retain the shared complete comparison week. Selecting any mini bar updates only that card with the chosen week's exact metrics and coverage status.
 - The Instagram, YouTube, and TikTok category line charts retain every available 2026 publish week. Their axes use week-start dates instead of ISO week numbers, and each chart stops at that platform's latest included publish date.
 - Each category chart includes a thicker dashed **All categories** line that sums every category for that platform and week.
 - Every category-chart point is selectable. Its detail panel lists the top three videos or posts published in that exact week, ranked by the active metric, with exact publish dates and outbound links. In Posts mode, contributors are ranked by views.
@@ -40,7 +40,7 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 ## 2026 source coverage in this build
 
 - YouTube: cumulative per-video data through Sep 10; 533 included videos (55 long-form and 478 Shorts).
-- Instagram: reviewed Meta export through Aug 26; 582 posts.
+- Instagram: reviewed Meta export refreshed Sep 10 with published-post coverage through Sep 9; 632 posts, including two HOTB-produced VoteVets collaboration posts.
 - TikTok: reviewed export through Aug 27; 563 posts.
 - X: merged account analytics and scrape through Aug 26; 969 authored posts, reposts excluded.
 - The updated YouTube workbook retains but excludes aggregate rows, 244 undated long-form rows, and rows outside 2026, matching its `Analysis Status` field.

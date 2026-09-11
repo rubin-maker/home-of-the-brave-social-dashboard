@@ -12,6 +12,7 @@ from openpyxl import load_workbook
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "sources", "youtube.xlsx")
+INSTAGRAM_SOURCE = os.path.join(ROOT, "sources", "instagram.xlsx")
 
 
 def number(value):
@@ -65,6 +66,68 @@ assert sum(row["gained"] for row in summary["youtube_subscribers"]["weekly"]) ==
 assert summary["report_scope"]["end"] == "2026-08-23"
 assert summary["common_coverage_end"] == "2026-08-26"
 
+instagram_workbook = load_workbook(INSTAGRAM_SOURCE, read_only=True, data_only=True)
+instagram_iterator = instagram_workbook["IG Data"].iter_rows(values_only=True)
+instagram_headers = list(next(instagram_iterator))
+instagram_rows = [dict(zip(instagram_headers, values)) for values in instagram_iterator
+                  if any(value is not None for value in values)]
+instagram_workbook.close()
+
+
+def instagram_date(row):
+    value = row["Publish time"]
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return datetime.strptime(str(value), "%Y-%m-%d").date()
+
+
+instagram = {
+    "posts": len(instagram_rows),
+    "views": int(sum(number(row.get("Views")) for row in instagram_rows)),
+    "eng": int(sum(number(row.get("Likes")) + number(row.get("Comments"))
+                   + number(row.get("Shares")) + number(row.get("Saves"))
+                   for row in instagram_rows)),
+    "reach": int(sum(number(row.get("Reach")) for row in instagram_rows)),
+    "followers": int(sum(number(row.get("Follows")) for row in instagram_rows)),
+}
+instagram_ids = [str(row["Post ID"] or "").strip() for row in instagram_rows]
+assert all(instagram_ids)
+assert len(set(instagram_ids)) == len(instagram_rows)
+assert min(instagram_date(row) for row in instagram_rows).isoformat() == "2026-01-02"
+assert max(instagram_date(row) for row in instagram_rows).isoformat() == "2026-09-09"
+assert instagram == {"posts": 632, "views": 5505479, "eng": 256824,
+                     "reach": 4240392, "followers": 7752}
+for key, expected in instagram.items():
+    assert summary["totals"]["Instagram"][key] == expected
+
+instagram_spike = next(row for row in instagram_rows if str(row["Post ID"]) == "18088151342667442")
+assert instagram_date(instagram_spike).isoformat() == "2026-09-01"
+assert int(number(instagram_spike["Views"])) == 570204
+assert int(sum(number(instagram_spike.get(metric)) for metric in ("Likes", "Comments", "Shares", "Saves"))) == 9345
+assert instagram_spike["Category"] == "News"
+assert instagram_spike["Permalink"] == "https://www.instagram.com/reel/DcwjXdij1Xz/"
+
+
+def instagram_week(start_text, end_text):
+    start, end = date.fromisoformat(start_text), date.fromisoformat(end_text)
+    rows = [row for row in instagram_rows if start <= instagram_date(row) <= end]
+    return {
+        "posts": len(rows),
+        "views": int(sum(number(row.get("Views")) for row in rows)),
+        "eng": int(sum(number(row.get("Likes")) + number(row.get("Comments"))
+                       + number(row.get("Shares")) + number(row.get("Saves")) for row in rows)),
+    }
+
+
+instagram_week_checks = {
+    "2026-08-31": instagram_week("2026-08-31", "2026-09-06"),
+    "2026-09-07": instagram_week("2026-09-07", "2026-09-09"),
+}
+assert instagram_week_checks["2026-08-31"] == {"posts": 29, "views": 1031426, "eng": 24190}
+assert instagram_week_checks["2026-09-07"] == {"posts": 8, "views": 439312, "eng": 76335}
+
 category_weeks = summary["category_weeks"]
 category_week_keys = [row[0] for row in category_weeks]
 trend_platforms = {"Instagram", "YouTube", "TikTok"}
@@ -116,14 +179,20 @@ for platform, categories in summary["category_weekly"].items():
                 assert sum(by_week[week_key][metric] for by_week in categories.values()) == expected[metric]
 
 spark_expected = {
-    "Instagram": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-26",
-                  "posts": 9, "views": 23832, "eng": 713},
+    "Instagram": {"first": "2026-07-20", "last": "2026-09-07", "end": "2026-09-09",
+                  "posts": 8, "views": 439312, "eng": 76335},
     "YouTube": {"first": "2026-07-20", "last": "2026-09-07", "end": "2026-09-09",
                 "posts": 8, "views": 30905, "eng": 2345},
     "TikTok": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-27",
                "posts": 10, "views": 4661, "eng": 470},
     "X": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-26",
           "posts": 9, "views": 121567, "eng": 13443},
+}
+spark_default_expected = {
+    "Instagram": {"week": "2026-08-31", "posts": 29, "views": 1031426, "eng": 24190},
+    "YouTube": {"week": "2026-08-31", "posts": 30, "views": 160799, "eng": 5842},
+    "TikTok": {"week": "2026-08-17", "posts": 23, "views": 11081, "eng": 1080},
+    "X": {"week": "2026-08-17", "posts": 31, "views": 1424562, "eng": 30619},
 }
 spark_checks = {}
 report_week_key = summary["report_scope"]["start"]
@@ -160,7 +229,12 @@ for platform, cutoff_text in summary["platform_coverage_end"].items():
     for metric in ("end", "posts", "views", "eng"):
         assert latest[metric] == expected[metric], (platform, metric, latest[metric], expected[metric])
     assert latest["complete"] is False
-    spark_checks[platform] = {"weeks": len(rows), "first": rows[0]["start"], "latest": latest}
+    default = next(row for row in reversed(rows) if row["complete"])
+    default_expected = spark_default_expected[platform]
+    for metric in ("week", "posts", "views", "eng"):
+        assert default[metric] == default_expected[metric], (platform, metric, default[metric], default_expected[metric])
+    spark_checks[platform] = {"weeks": len(rows), "first": rows[0]["start"],
+                              "defaultLatestComplete": default, "latest": latest}
 
 dashboard = open(os.path.join(ROOT, "dashboard.html"), encoding="utf-8").read()
 index = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
@@ -174,11 +248,14 @@ assert "all available 2026 weekly" in dashboard
 assert "No categories selected — choose Show all" in dashboard
 assert "Deselect all" in dashboard
 assert "Latest 8 available publish weeks." in dashboard
-assert "Latest complete comparison week" in dashboard
+assert "Latest complete platform week" in dashboard
+assert "const defaultSparkWeek=" in dashboard
 assert "Partial publish week through" in dashboard
 assert "scheduledEnd=shiftDate(start,6)" in dashboard
 assert "spark-fill${week.complete?\"\":\" partial\"}" in dashboard
 assert "partial ${coveredDays(last.start,last.end)}/7 days" in dashboard
+assert "Instagram: Meta Business Suite export with published-post coverage through 2026-09-09; 632 reviewed posts." in dashboard
+assert '"p":"Instagram"' in dashboard and '"v":570204' in dashboard
 assert "data-spark-platform=" in dashboard
 assert "spark-readout" in dashboard
 assert 'ALL_CATEGORIES="All categories"' in dashboard
@@ -192,13 +269,28 @@ with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="")
     post_rows = list(csv.DictReader(handle))
 assert len(post_rows) == sum(total["posts"] for total in summary["totals"].values())
 assert sum(row["Platform"] == "YouTube" for row in post_rows) == 533
+assert sum(row["Platform"] == "Instagram" for row in post_rows) == 632
+assert all(row["Week"] for row in post_rows)
+instagram_spike_csv = next(row for row in post_rows if row["Platform"] == "Instagram"
+                           and row["Link"] == "https://www.instagram.com/reel/DcwjXdij1Xz/")
+assert instagram_spike_csv["Week"] == "Week 36"
 
 result = {
     "source": os.path.basename(SOURCE),
     "sourceSha256": hashlib.sha256(open(SOURCE, "rb").read()).hexdigest(),
+    "instagramSourceSha256": hashlib.sha256(open(INSTAGRAM_SOURCE, "rb").read()).hexdigest(),
     "includedYouTubeRows": 533,
     "statusCounts": status_counts,
     "youtubeTotals": youtube,
+    "instagramTotals": instagram,
+    "instagramSpike": {
+        "postId": str(instagram_spike["Post ID"]),
+        "publishDate": instagram_date(instagram_spike).isoformat(),
+        "views": int(number(instagram_spike["Views"])),
+        "engagements": int(sum(number(instagram_spike.get(metric)) for metric in ("Likes", "Comments", "Shares", "Saves"))),
+        "url": instagram_spike["Permalink"],
+    },
+    "instagramWeeklyChecks": instagram_week_checks,
     "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
     "reportingWeek": summary["report_scope"],
     "platformCardLatestWeeks": spark_checks,
@@ -211,6 +303,8 @@ result = {
         "533 unique included YouTube Content IDs",
         "All included YouTube rows have 2026 publish dates, titles and recognized categories",
         "Dashboard YouTube totals reconcile to raw included rows",
+        "Dashboard Instagram totals reconcile to 632 unique raw IG Data rows through Sep 9",
+        "Instagram Aug 31 and Sep 7 weekly spikes reconcile to raw posts, including the 570,204-view Sep 1 reel",
         "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
         "Headline week remains within common four-platform coverage",
         "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
@@ -219,11 +313,12 @@ result = {
         "Category chart axes use readable dates and stop at each platform's latest included publish date",
         "Category charts include Show all and Deselect all controls",
         "Platform cards label their headline units and expose selectable weekly bar details",
-        "Platform mini bars use each source's latest eight consecutive weeks, retain the shared complete-week default, and mark partial final weeks",
+        "Platform mini bars use each source's latest eight consecutive weeks, default to its latest complete week, and mark partial final weeks",
         "All categories lines reconcile to platform totals and use a distinct dashed treatment",
         "Selectable category points expose ranked contributing posts with exact publish dates and links",
         "Dashboard and index HTML match",
         "All-post CSV row counts reconcile to the dashboard summary",
+        "Every all-post CSV row retains its publish-week label, including new posts after the shared comparison window",
     ],
 }
 with open(os.path.join(ROOT, "validation.json"), "w", encoding="utf-8") as handle:

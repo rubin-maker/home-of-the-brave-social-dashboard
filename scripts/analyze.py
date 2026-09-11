@@ -58,7 +58,7 @@ METRIC_DEFINITIONS = {
 
 
 def clean_text(value):
-    text = str(value or "").strip()
+    text = "\n".join(line.rstrip() for line in str(value or "").splitlines()).strip()
     replacements = {
         "‚Äú": "“", "‚Äù": "”", "‚Äô": "’", "‚Ä¶": "…",
         "â€œ": "“", "â€": "”", "â€™": "’", "â€¦": "…",
@@ -278,15 +278,14 @@ while cursor <= report_start:
     cursor += timedelta(days=7)
 context_starts = week_starts[-WEEKLY_CONTEXT_WEEKS:]
 weeks = []
-week_lookup = {}
 for start in context_starts:
     end = start + timedelta(days=6)
     name = f"Week {start.isocalendar().week}"
     weeks.append([name, start.isoformat(), end.isoformat()])
-    week_lookup[start.isoformat()] = name
 
 for post in posts:
-    post["week"] = week_lookup.get(monday_of(post["date"]).isoformat(), "")
+    post_week_start = monday_of(post["date"])
+    post["week"] = f"Week {post_week_start.isocalendar().week}"
 
 # Category charts retain every available 2026 publish week. The first and last
 # labels are clipped to the available period. After the partial opening week,
@@ -414,7 +413,8 @@ source_notes = [
     "The workbook says not to relabel it as Subscribers gained; it is not the current channel subscriber total.",
     "YouTube exclusions retained in the source workbook but omitted from dashboard analysis: aggregate rows, rows without a publish date, and rows outside 2026.",
     "The source workbook has cached #VALUE! cells in weekly delta columns for blank weeks. The dashboard does not use those formulas; it recomputes from included raw rows.",
-    "Instagram: Meta Business Suite export through Aug 26, 2026; 582 reviewed posts.",
+    f"Instagram: Meta Business Suite export with published-post coverage through {platform_ends['Instagram']}; "
+    f"{totals['Instagram']['posts']} reviewed posts.",
     "TikTok: per-post export through Aug 27, 2026; 563 reviewed posts.",
     "X: combined analytics export and scrape through Aug 26, 2026; 969 authored posts; reposts excluded.",
     f"The headline reporting week is based on common cross-platform coverage through {common_coverage_end}; individual source freshness differs.",

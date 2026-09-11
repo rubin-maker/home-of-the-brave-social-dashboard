@@ -1,6 +1,7 @@
 {
   "source": "youtube.xlsx",
   "sourceSha256": "d9c63a5d0ba4d050c6a975cb3b89a54c3feef10482c237d61c2cdf373b8e044b",
+  "instagramSourceSha256": "35b0389dbaa6f7e97ce4a41c6ef7d08c734426ada1fe29475dea39258e5bc51d",
   "includedYouTubeRows": 533,
   "statusCounts": {
     "Long Data": {
@@ -23,21 +24,47 @@
     "followers": 4355,
     "watch_hours": 46338.44
   },
+  "instagramTotals": {
+    "posts": 632,
+    "views": 5505479,
+    "eng": 256824,
+    "reach": 4240392,
+    "followers": 7752
+  },
+  "instagramSpike": {
+    "postId": "18088151342667442",
+    "publishDate": "2026-09-01",
+    "views": 570204,
+    "engagements": 9345,
+    "url": "https://www.instagram.com/reel/DcwjXdij1Xz/"
+  },
+  "instagramWeeklyChecks": {
+    "2026-08-31": {
+      "posts": 29,
+      "views": 1031426,
+      "eng": 24190
+    },
+    "2026-09-07": {
+      "posts": 8,
+      "views": 439312,
+      "eng": 76335
+    }
+  },
   "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
   "reportingWeek": {
     "end": "2026-08-23",
-    "eng": 39675,
+    "eng": 39679,
     "posts": 94,
     "start": "2026-08-17",
     "totals": {
       "Instagram": {
-        "avg_views": 5960,
-        "eng": 3806,
+        "avg_views": 5968,
+        "eng": 3810,
         "er": 2.9,
         "followers": 99,
         "posts": 22,
-        "reach": 108654,
-        "views": 131130,
+        "reach": 108764,
+        "views": 131294,
         "watch_hours": 0
       },
       "TikTok": {
@@ -71,26 +98,44 @@
         "watch_hours": 575.07
       }
     },
-    "views": 1661834,
+    "views": 1661998,
     "week": "Week 34"
   },
   "platformCardLatestWeeks": {
     "Instagram": {
       "weeks": 8,
-      "first": "2026-07-06",
+      "first": "2026-07-20",
+      "defaultLatestComplete": {
+        "week": "2026-08-31",
+        "start": "2026-08-31",
+        "end": "2026-09-06",
+        "complete": true,
+        "posts": 29,
+        "views": 1031426,
+        "eng": 24190
+      },
       "latest": {
-        "week": "2026-08-24",
-        "start": "2026-08-24",
-        "end": "2026-08-26",
+        "week": "2026-09-07",
+        "start": "2026-09-07",
+        "end": "2026-09-09",
         "complete": false,
-        "posts": 9,
-        "views": 23832,
-        "eng": 713
+        "posts": 8,
+        "views": 439312,
+        "eng": 76335
       }
     },
     "TikTok": {
       "weeks": 8,
       "first": "2026-07-06",
+      "defaultLatestComplete": {
+        "week": "2026-08-17",
+        "start": "2026-08-17",
+        "end": "2026-08-23",
+        "complete": true,
+        "posts": 23,
+        "views": 11081,
+        "eng": 1080
+      },
       "latest": {
         "week": "2026-08-24",
         "start": "2026-08-24",
@@ -104,6 +149,15 @@
     "X": {
       "weeks": 8,
       "first": "2026-07-06",
+      "defaultLatestComplete": {
+        "week": "2026-08-17",
+        "start": "2026-08-17",
+        "end": "2026-08-23",
+        "complete": true,
+        "posts": 31,
+        "views": 1424562,
+        "eng": 30619
+      },
       "latest": {
         "week": "2026-08-24",
         "start": "2026-08-24",
@@ -117,6 +171,15 @@
     "YouTube": {
       "weeks": 8,
       "first": "2026-07-20",
+      "defaultLatestComplete": {
+        "week": "2026-08-31",
+        "start": "2026-08-31",
+        "end": "2026-09-06",
+        "complete": true,
+        "posts": 30,
+        "views": 160799,
+        "eng": 5842
+      },
       "latest": {
         "week": "2026-09-07",
         "start": "2026-09-07",
@@ -150,6 +213,8 @@
     "533 unique included YouTube Content IDs",
     "All included YouTube rows have 2026 publish dates, titles and recognized categories",
     "Dashboard YouTube totals reconcile to raw included rows",
+    "Dashboard Instagram totals reconcile to 632 unique raw IG Data rows through Sep 9",
+    "Instagram Aug 31 and Sep 7 weekly spikes reconcile to raw posts, including the 570,204-view Sep 1 reel",
     "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
     "Headline week remains within common four-platform coverage",
     "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
@@ -158,10 +223,11 @@
     "Category chart axes use readable dates and stop at each platform's latest included publish date",
     "Category charts include Show all and Deselect all controls",
     "Platform cards label their headline units and expose selectable weekly bar details",
-    "Platform mini bars use each source's latest eight consecutive weeks, retain the shared complete-week default, and mark partial final weeks",
+    "Platform mini bars use each source's latest eight consecutive weeks, default to its latest complete week, and mark partial final weeks",
     "All categories lines reconcile to platform totals and use a distinct dashed treatment",
     "Selectable category points expose ranked contributing posts with exact publish dates and links",
     "Dashboard and index HTML match",
-    "All-post CSV row counts reconcile to the dashboard summary"
+    "All-post CSV row counts reconcile to the dashboard summary",
+    "Every all-post CSV row retains its publish-week label, including new posts after the shared comparison window"
   ]
 }
