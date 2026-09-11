@@ -98,6 +98,8 @@
     "Dashboard YouTube totals reconcile to raw included rows",
     "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
     "Headline week remains within common four-platform coverage",
+    "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
+    "Category chart axes use readable dates and stop at each platform's source cutoff",
     "Dashboard and index HTML match",
     "All-post CSV row counts reconcile to the dashboard summary"
   ]

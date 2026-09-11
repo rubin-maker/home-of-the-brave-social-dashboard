@@ -31,7 +31,7 @@ Replace these files with refreshed workbooks that preserve the current raw-data 
 - `sources/tiktok.xlsx`
 - `sources/x.xlsx`
 
-Then run `./build.sh`. The headline period is selected automatically as the newest fully complete Monday–Sunday week across the file dates. The dashboard keeps eight complete weeks of trend context and the entire available file in its post explorer.
+Then run `./build.sh`. The headline period is selected automatically as the newest fully complete Monday–Sunday week across the file dates. The platform trend table and top-post tabs keep eight complete weeks of context. The category line charts show every available 2026 publish week through each platform's latest included publish date, with week-start dates on the axis. The post explorer retains the entire available file.
 
 The YouTube importer honors the workbook's `Analysis Status` field when it is present, using only `Included` rows. It accepts the legacy `Subscribers gained` and current `Subscribers` column names, but preserves the current workbook's metric label in the dashboard. Aggregate rows, undated rows, and rows outside 2026 stay in the source workbook and remain outside dashboard analysis.
 

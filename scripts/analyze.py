@@ -288,6 +288,25 @@ for start in context_starts:
 for post in posts:
     post["week"] = week_lookup.get(monday_of(post["date"]).isoformat(), "")
 
+# Category charts retain every available 2026 publish week. The first and last
+# labels are clipped to the available period. After the partial opening week,
+# each aggregation key is the Monday that owns the week.
+category_weeks = []
+category_cursor = monday_of(period_start)
+category_last_start = monday_of(period_end)
+period_start_date = date.fromisoformat(period_start)
+period_end_date = date.fromisoformat(period_end)
+while category_cursor <= category_last_start:
+    category_end = category_cursor + timedelta(days=6)
+    display_start = max(category_cursor, period_start_date)
+    display_end = min(category_end, period_end_date)
+    category_weeks.append([
+        display_start.isoformat(),
+        display_start.isoformat(),
+        display_end.isoformat(),
+    ])
+    category_cursor += timedelta(days=7)
+
 totals = {p: aggregate([x for x in posts if x["platform"] == p]) for p in platforms}
 youtube_rows = [post for post in posts if post["platform"] == "YouTube"]
 youtube_workbook = load_workbook(SOURCES["YouTube"], read_only=True, data_only=True)
@@ -375,14 +394,17 @@ for platform in CATEGORY_TREND_PLATFORMS:
     for category_row in category_totals[platform]:
         category = category_row["category"]
         category_weekly[platform][category] = {}
-        for week_name, _, _ in weeks:
+        for week_key, week_start, week_end in category_weeks:
+            if week_start > platform_ends[platform]:
+                category_weekly[platform][category][week_key] = None
+                continue
             subset = [
                 post for post in posts
                 if post["platform"] == platform
                 and post["category"] == category
-                and post["week"] == week_name
+                and week_start <= post["date"] <= min(week_end, platform_ends[platform])
             ]
-            category_weekly[platform][category][week_name] = aggregate(subset)
+            category_weekly[platform][category][week_key] = aggregate(subset)
 
 source_notes = [
     f"YouTube: cumulative per-video metrics through {youtube_cutoff}; "
@@ -404,6 +426,7 @@ summary = {
     "platform_coverage_end": platform_ends,
     "common_coverage_end": common_coverage_end,
     "weeks": weeks,
+    "category_weeks": category_weeks,
     "report_scope": report_scope,
     "totals": totals,
     "youtube_subscribers": youtube_subscribers,

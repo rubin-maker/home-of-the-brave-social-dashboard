@@ -21,6 +21,7 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 - Weeks run Monday–Sunday and are assigned by publish date.
 - The reporting week is the latest fully closed week supported by all four platforms. It uses the earliest platform coverage end, while full-file totals retain each platform's own available period.
 - The trend table keeps the latest eight complete weeks.
+- The Instagram, YouTube, and TikTok category line charts retain every available 2026 publish week. Their axes use week-start dates instead of ISO week numbers, and each chart stops at that platform's latest included publish date.
 - Year-to-date totals, category tables, and the post explorer use every source row.
 - Metrics are current cumulative values attributed to publish date; they are not activity earned only during that week.
 
@@ -30,7 +31,7 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 2. Confirm the reported week is fully complete for all four sources.
 3. Scan the final days in `all_posts.csv` for unexpected zero-value or duplicate rows.
 4. Check that old weeks do not move unexpectedly when replacing a workbook.
-5. Open `dashboard.html` and test the category tabs, week tabs, platform filter, search, and outbound post links.
+5. Open `dashboard.html` and test the category tabs, full-year category-chart scrolling and date labels, week tabs, platform filter, search, and outbound post links.
 
 ## 2026 source coverage in this build
 

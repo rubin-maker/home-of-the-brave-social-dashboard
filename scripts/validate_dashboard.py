@@ -6,7 +6,7 @@ import hashlib
 import json
 import os
 from collections import Counter
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from openpyxl import load_workbook
 
@@ -65,12 +65,34 @@ assert sum(row["gained"] for row in summary["youtube_subscribers"]["weekly"]) ==
 assert summary["report_scope"]["end"] == "2026-08-23"
 assert summary["common_coverage_end"] == "2026-08-26"
 
+category_weeks = summary["category_weeks"]
+category_week_keys = [row[0] for row in category_weeks]
+assert len(category_weeks) == 37
+assert category_weeks[0] == ["2026-01-01", "2026-01-01", "2026-01-04"]
+assert category_weeks[-1] == ["2026-09-07", "2026-09-07", "2026-09-09"]
+for previous, current in zip(category_weeks, category_weeks[1:]):
+    assert date.fromisoformat(current[1]) == date.fromisoformat(previous[2]) + timedelta(days=1)
+for platform, categories in summary["category_weekly"].items():
+    cutoff = summary["platform_coverage_end"][platform]
+    for category, by_week in categories.items():
+        assert list(by_week) == category_week_keys
+        for week_key, week_start, _ in category_weeks:
+            assert (by_week[week_key] is None) == (week_start > cutoff)
+        total = next(row for row in summary["category_totals"][platform]
+                     if row["category"] == category)
+        for metric in ("posts", "views", "eng"):
+            assert sum(row[metric] for row in by_week.values() if row is not None) == total[metric]
+
 dashboard = open(os.path.join(ROOT, "dashboard.html"), encoding="utf-8").read()
 index = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 assert dashboard == index
 assert ">YouTube subscriber metric<" in dashboard
 assert ">YouTube subscribers gained<" not in dashboard
 assert "3,398,233" in dashboard or '"views":3398233' in dashboard
+assert "Every available 2026 publish week" in dashboard
+assert "dates mark the start of each week" in dashboard
+assert "all available 2026 weekly" in dashboard
+assert "No categories selected — choose Show all" in dashboard
 
 with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="") as handle:
     post_rows = list(csv.DictReader(handle))
@@ -96,6 +118,8 @@ result = {
         "Dashboard YouTube totals reconcile to raw included rows",
         "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
         "Headline week remains within common four-platform coverage",
+        "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
+        "Category chart axes use readable dates and stop at each platform's source cutoff",
         "Dashboard and index HTML match",
         "All-post CSV row counts reconcile to the dashboard summary",
     ],
