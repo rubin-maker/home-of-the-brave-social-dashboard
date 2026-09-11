@@ -416,7 +416,9 @@ source_notes = [
     f"Instagram: Meta Business Suite export with published-post coverage through {platform_ends['Instagram']}; "
     f"{totals['Instagram']['posts']} reviewed posts.",
     "TikTok: per-post export through Aug 27, 2026; 563 reviewed posts.",
-    "X: combined analytics export and scrape through Aug 26, 2026; 969 authored posts; reposts excluded.",
+    f"X: combined analytics export and scrape with authored-post coverage through {platform_ends['X']}; "
+    f"{totals['X']['posts']:,} authored posts; rows that are themselves reposted posts were excluded upstream.",
+    "X engagement uses the source-reported Engagements field. Analytics-export and earlier raw-scrape rows can include actions beyond likes, replies, reposts, and bookmarks; the 41 Sep 10 scrape rows use the visible component sum. Reposts interaction counts are retained.",
     f"The headline reporting week is based on common cross-platform coverage through {common_coverage_end}; individual source freshness differs.",
 ]
 

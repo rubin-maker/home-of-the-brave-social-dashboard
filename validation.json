@@ -2,6 +2,7 @@
   "source": "youtube.xlsx",
   "sourceSha256": "d9c63a5d0ba4d050c6a975cb3b89a54c3feef10482c237d61c2cdf373b8e044b",
   "instagramSourceSha256": "35b0389dbaa6f7e97ce4a41c6ef7d08c734426ada1fe29475dea39258e5bc51d",
+  "xSourceSha256": "613708059843829322dd2ccbde50fad285d8efb1d823873079d5bce987ab45f9",
   "includedYouTubeRows": 533,
   "statusCounts": {
     "Long Data": {
@@ -50,6 +51,43 @@
       "eng": 76335
     }
   },
+  "xTotals": {
+    "posts": 1010,
+    "views": 113343623,
+    "eng": 3349708,
+    "reach": 0,
+    "followers": 0,
+    "watch_hours": 0
+  },
+  "xSourceCounts": {
+    "X analytics export": 622,
+    "raw scrape": 347,
+    "scrape 2026-09-10": 41
+  },
+  "xSpike": {
+    "postId": "2097857838068518996",
+    "publishDate": "2026-09-09",
+    "impressions": 251851,
+    "engagements": 822,
+    "url": "https://x.com/OfTheBraveUSA/status/2097857838068518996"
+  },
+  "xWeeklyChecks": {
+    "2026-08-17": {
+      "posts": 31,
+      "views": 1424592,
+      "eng": 30619
+    },
+    "2026-08-31": {
+      "posts": 25,
+      "views": 334491,
+      "eng": 14904
+    },
+    "2026-09-07": {
+      "posts": 9,
+      "views": 393985,
+      "eng": 6475
+    }
+  },
   "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
   "reportingWeek": {
     "end": "2026-08-23",
@@ -78,13 +116,13 @@
         "watch_hours": 0
       },
       "X": {
-        "avg_views": 45954,
+        "avg_views": 45955,
         "eng": 30619,
         "er": 2.15,
         "followers": 0,
         "posts": 31,
         "reach": 0,
-        "views": 1424562,
+        "views": 1424592,
         "watch_hours": 0
       },
       "YouTube": {
@@ -98,7 +136,7 @@
         "watch_hours": 575.07
       }
     },
-    "views": 1661998,
+    "views": 1662028,
     "week": "Week 34"
   },
   "platformCardLatestWeeks": {
@@ -148,24 +186,24 @@
     },
     "X": {
       "weeks": 8,
-      "first": "2026-07-06",
+      "first": "2026-07-20",
       "defaultLatestComplete": {
-        "week": "2026-08-17",
-        "start": "2026-08-17",
-        "end": "2026-08-23",
+        "week": "2026-08-31",
+        "start": "2026-08-31",
+        "end": "2026-09-06",
         "complete": true,
-        "posts": 31,
-        "views": 1424562,
-        "eng": 30619
+        "posts": 25,
+        "views": 334491,
+        "eng": 14904
       },
       "latest": {
-        "week": "2026-08-24",
-        "start": "2026-08-24",
-        "end": "2026-08-26",
+        "week": "2026-09-07",
+        "start": "2026-09-07",
+        "end": "2026-09-09",
         "complete": false,
         "posts": 9,
-        "views": 121567,
-        "eng": 13443
+        "views": 393985,
+        "eng": 6475
       }
     },
     "YouTube": {
@@ -215,6 +253,10 @@
     "Dashboard YouTube totals reconcile to raw included rows",
     "Dashboard Instagram totals reconcile to 632 unique raw IG Data rows through Sep 9",
     "Instagram Aug 31 and Sep 7 weekly spikes reconcile to raw posts, including the 570,204-view Sep 1 reel",
+    "Dashboard X totals and category totals reconcile to 1,010 unique raw X Data rows through Sep 9",
+    "X Aug 31 and Sep 7 weeks reconcile to raw posts, including the 251,851-impression Sep 9 post",
+    "All 41 Sep 10 X scrape rows reconcile source Engagements to likes, replies, reposts, and bookmarks",
+    "Dashboard source coverage discloses the differing X engagement definitions and retained Reposts interaction counts",
     "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
     "Headline week remains within common four-platform coverage",
     "All 37 available 2026 category weeks are contiguous and reconcile to category totals",

@@ -13,6 +13,8 @@ The build reads only the normalized raw-data tabs below. Overview and category s
 
 The combined headline is therefore labeled **views / impressions**. It is useful as a volume indicator, but it is not a standardized cross-platform measure. Engagement rate is calculated as engagements divided by the platform's headline metric.
 
+For X, the dashboard preserves the source-reported `Engagements` field. Analytics-export and earlier raw-scrape rows can include actions beyond likes, replies, reposts, and bookmarks, while the 41 Sep 10 scrape rows use the visible component sum. Those source eras are therefore not perfectly identical engagement definitions. Rows that are themselves reposted posts were excluded upstream; the `Reposts` interaction count is retained.
+
 ## Reporting scope
 
 - The YouTube subscriber card sums the source workbook's `Subscribers` field across included Long Data and Shorts Data rows. The workbook explicitly says not to relabel it as `Subscribers gained`. It is not a live channel subscriber count or net growth.
@@ -42,6 +44,6 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 - YouTube: cumulative per-video data through Sep 10; 533 included videos (55 long-form and 478 Shorts).
 - Instagram: reviewed Meta export refreshed Sep 10 with published-post coverage through Sep 9; 632 posts, including two HOTB-produced VoteVets collaboration posts.
 - TikTok: reviewed export through Aug 27; 563 posts.
-- X: merged account analytics and scrape through Aug 26; 969 authored posts, reposts excluded.
+- X: merged account analytics and Sep 10 scrape with authored-post coverage through Sep 9; 1,010 authored posts. Rows that are themselves reposted posts were excluded upstream.
 - The updated YouTube workbook retains but excludes aggregate rows, 244 undated long-form rows, and rows outside 2026, matching its `Analysis Status` field.
 - The workbook has 1,002 cached `#VALUE!` cells in weekly delta columns for blank weeks. The dashboard does not use those formulas; it recomputes every displayed YouTube metric from the 533 included raw rows.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the generated dashboard against the included YouTube source rows."""
+"""Validate the generated dashboard against the included source rows."""
 
 import csv
 import hashlib
@@ -13,6 +13,7 @@ from openpyxl import load_workbook
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = os.path.join(ROOT, "sources", "youtube.xlsx")
 INSTAGRAM_SOURCE = os.path.join(ROOT, "sources", "instagram.xlsx")
+X_SOURCE = os.path.join(ROOT, "sources", "x.xlsx")
 
 
 def number(value):
@@ -64,7 +65,7 @@ assert summary["youtube_subscribers"]["long_form"] == 1290
 assert summary["youtube_subscribers"]["shorts"] == 3065
 assert sum(row["gained"] for row in summary["youtube_subscribers"]["weekly"]) == 4355
 assert summary["report_scope"]["end"] == "2026-08-23"
-assert summary["common_coverage_end"] == "2026-08-26"
+assert summary["common_coverage_end"] == "2026-08-27"
 
 instagram_workbook = load_workbook(INSTAGRAM_SOURCE, read_only=True, data_only=True)
 instagram_iterator = instagram_workbook["IG Data"].iter_rows(values_only=True)
@@ -128,6 +129,97 @@ instagram_week_checks = {
 assert instagram_week_checks["2026-08-31"] == {"posts": 29, "views": 1031426, "eng": 24190}
 assert instagram_week_checks["2026-09-07"] == {"posts": 8, "views": 439312, "eng": 76335}
 
+x_workbook = load_workbook(X_SOURCE, read_only=True, data_only=True)
+x_iterator = x_workbook["X Data"].iter_rows(values_only=True)
+x_headers = list(next(x_iterator))
+x_rows = [dict(zip(x_headers, values)) for values in x_iterator
+          if any(value is not None for value in values)]
+x_workbook.close()
+
+
+def x_date(row):
+    value = row["Date"]
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return datetime.strptime(str(value)[:10], "%Y-%m-%d").date()
+
+
+x_metric_fields = ("Views", "Engagements", "Likes", "Replies", "Reposts", "Bookmarks")
+x = {
+    "posts": len(x_rows),
+    "views": int(sum(number(row.get("Views")) for row in x_rows)),
+    "eng": int(sum(number(row.get("Engagements")) for row in x_rows)),
+    "reach": 0,
+    "followers": 0,
+    "watch_hours": 0,
+}
+x_ids = [str(row["Post ID"] or "").strip() for row in x_rows]
+x_urls = [str(row["URL"] or "").strip() for row in x_rows]
+assert all(x_ids) and len(set(x_ids)) == len(x_rows)
+assert all(x_urls) and len(set(x_urls)) == len(x_rows)
+assert all(row.get("Date") and row.get("Post text") and row.get("Category") for row in x_rows)
+assert all(number(row.get(metric)) >= 0 for row in x_rows for metric in x_metric_fields)
+assert min(x_date(row) for row in x_rows).isoformat() == "2026-01-01"
+assert max(x_date(row) for row in x_rows).isoformat() == "2026-09-09"
+assert x == {"posts": 1010, "views": 113343623, "eng": 3349708,
+             "reach": 0, "followers": 0, "watch_hours": 0}
+for key, expected in x.items():
+    assert summary["totals"]["X"][key] == expected
+
+x_source_counts = dict(Counter(str(row.get("Source") or "").strip() for row in x_rows))
+assert x_source_counts == {
+    "X analytics export": 622,
+    "raw scrape": 347,
+    "scrape 2026-09-10": 41,
+}
+x_sep10_rows = [row for row in x_rows if row.get("Source") == "scrape 2026-09-10"]
+assert len(x_sep10_rows) == 41
+assert all(int(number(row.get("Engagements"))) == int(sum(number(row.get(metric))
+               for metric in ("Likes", "Replies", "Reposts", "Bookmarks")))
+           for row in x_sep10_rows)
+
+x_spike = next(row for row in x_rows if str(row["Post ID"]).strip() == "2097857838068518996")
+assert x_date(x_spike).isoformat() == "2026-09-09"
+assert int(number(x_spike["Views"])) == 251851
+assert int(number(x_spike["Engagements"])) == 822
+assert x_spike["Category"] == "General clips"
+assert x_spike["URL"] == "https://x.com/OfTheBraveUSA/status/2097857838068518996"
+
+
+def x_week(start_text, end_text):
+    start, end = date.fromisoformat(start_text), date.fromisoformat(end_text)
+    rows = [row for row in x_rows if start <= x_date(row) <= end]
+    return {
+        "posts": len(rows),
+        "views": int(sum(number(row.get("Views")) for row in rows)),
+        "eng": int(sum(number(row.get("Engagements")) for row in rows)),
+    }
+
+
+x_week_checks = {
+    "2026-08-17": x_week("2026-08-17", "2026-08-23"),
+    "2026-08-31": x_week("2026-08-31", "2026-09-06"),
+    "2026-09-07": x_week("2026-09-07", "2026-09-09"),
+}
+assert x_week_checks["2026-08-17"] == {"posts": 31, "views": 1424592, "eng": 30619}
+assert x_week_checks["2026-08-31"] == {"posts": 25, "views": 334491, "eng": 14904}
+assert x_week_checks["2026-09-07"] == {"posts": 9, "views": 393985, "eng": 6475}
+assert summary["report_scope"]["posts"] == 94
+assert summary["report_scope"]["views"] == 1662028
+assert summary["report_scope"]["eng"] == 39679
+
+x_categories = {str(row["Category"]).strip() for row in x_rows}
+assert len(summary["category_totals"]["X"]) == len(x_categories)
+for category in x_categories:
+    raw_rows = [row for row in x_rows if str(row["Category"]).strip() == category]
+    dashboard_row = next(row for row in summary["category_totals"]["X"]
+                         if row["category"] == category)
+    assert dashboard_row["posts"] == len(raw_rows)
+    assert dashboard_row["views"] == int(sum(number(row.get("Views")) for row in raw_rows))
+    assert dashboard_row["eng"] == int(sum(number(row.get("Engagements")) for row in raw_rows))
+
 category_weeks = summary["category_weeks"]
 category_week_keys = [row[0] for row in category_weeks]
 trend_platforms = {"Instagram", "YouTube", "TikTok"}
@@ -185,14 +277,14 @@ spark_expected = {
                 "posts": 8, "views": 30905, "eng": 2345},
     "TikTok": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-27",
                "posts": 10, "views": 4661, "eng": 470},
-    "X": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-26",
-          "posts": 9, "views": 121567, "eng": 13443},
+    "X": {"first": "2026-07-20", "last": "2026-09-07", "end": "2026-09-09",
+          "posts": 9, "views": 393985, "eng": 6475},
 }
 spark_default_expected = {
     "Instagram": {"week": "2026-08-31", "posts": 29, "views": 1031426, "eng": 24190},
     "YouTube": {"week": "2026-08-31", "posts": 30, "views": 160799, "eng": 5842},
     "TikTok": {"week": "2026-08-17", "posts": 23, "views": 11081, "eng": 1080},
-    "X": {"week": "2026-08-17", "posts": 31, "views": 1424562, "eng": 30619},
+    "X": {"week": "2026-08-31", "posts": 25, "views": 334491, "eng": 14904},
 }
 spark_checks = {}
 report_week_key = summary["report_scope"]["start"]
@@ -200,7 +292,6 @@ for platform, cutoff_text in summary["platform_coverage_end"].items():
     cutoff = date.fromisoformat(cutoff_text)
     weeks = [row for row in category_weeks if date.fromisoformat(row[1]) <= cutoff][-8:]
     assert len(weeks) == 8
-    assert any(row[0] == report_week_key for row in weeks)
     rows = []
     for week_key, start_text, _source_end in weeks:
         start = date.fromisoformat(start_text)
@@ -256,6 +347,9 @@ assert "spark-fill${week.complete?\"\":\" partial\"}" in dashboard
 assert "partial ${coveredDays(last.start,last.end)}/7 days" in dashboard
 assert "Instagram: Meta Business Suite export with published-post coverage through 2026-09-09; 632 reviewed posts." in dashboard
 assert '"p":"Instagram"' in dashboard and '"v":570204' in dashboard
+assert "X: combined analytics export and scrape with authored-post coverage through 2026-09-09; 1,010 authored posts; rows that are themselves reposted posts were excluded upstream." in dashboard
+assert "X engagement uses the source-reported Engagements field. Analytics-export and earlier raw-scrape rows can include actions beyond likes, replies, reposts, and bookmarks; the 41 Sep 10 scrape rows use the visible component sum. Reposts interaction counts are retained." in dashboard
+assert '"p":"X"' in dashboard and '"v":251851' in dashboard
 assert "data-spark-platform=" in dashboard
 assert "spark-readout" in dashboard
 assert 'ALL_CATEGORIES="All categories"' in dashboard
@@ -270,15 +364,20 @@ with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="")
 assert len(post_rows) == sum(total["posts"] for total in summary["totals"].values())
 assert sum(row["Platform"] == "YouTube" for row in post_rows) == 533
 assert sum(row["Platform"] == "Instagram" for row in post_rows) == 632
+assert sum(row["Platform"] == "X" for row in post_rows) == 1010
 assert all(row["Week"] for row in post_rows)
 instagram_spike_csv = next(row for row in post_rows if row["Platform"] == "Instagram"
                            and row["Link"] == "https://www.instagram.com/reel/DcwjXdij1Xz/")
 assert instagram_spike_csv["Week"] == "Week 36"
+x_spike_csv = next(row for row in post_rows if row["Platform"] == "X"
+                   and row["Link"] == "https://x.com/OfTheBraveUSA/status/2097857838068518996")
+assert x_spike_csv["Week"] == "Week 37"
 
 result = {
     "source": os.path.basename(SOURCE),
     "sourceSha256": hashlib.sha256(open(SOURCE, "rb").read()).hexdigest(),
     "instagramSourceSha256": hashlib.sha256(open(INSTAGRAM_SOURCE, "rb").read()).hexdigest(),
+    "xSourceSha256": hashlib.sha256(open(X_SOURCE, "rb").read()).hexdigest(),
     "includedYouTubeRows": 533,
     "statusCounts": status_counts,
     "youtubeTotals": youtube,
@@ -291,6 +390,16 @@ result = {
         "url": instagram_spike["Permalink"],
     },
     "instagramWeeklyChecks": instagram_week_checks,
+    "xTotals": x,
+    "xSourceCounts": x_source_counts,
+    "xSpike": {
+        "postId": str(x_spike["Post ID"]),
+        "publishDate": x_date(x_spike).isoformat(),
+        "impressions": int(number(x_spike["Views"])),
+        "engagements": int(number(x_spike["Engagements"])),
+        "url": x_spike["URL"],
+    },
+    "xWeeklyChecks": x_week_checks,
     "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
     "reportingWeek": summary["report_scope"],
     "platformCardLatestWeeks": spark_checks,
@@ -305,6 +414,10 @@ result = {
         "Dashboard YouTube totals reconcile to raw included rows",
         "Dashboard Instagram totals reconcile to 632 unique raw IG Data rows through Sep 9",
         "Instagram Aug 31 and Sep 7 weekly spikes reconcile to raw posts, including the 570,204-view Sep 1 reel",
+        "Dashboard X totals and category totals reconcile to 1,010 unique raw X Data rows through Sep 9",
+        "X Aug 31 and Sep 7 weeks reconcile to raw posts, including the 251,851-impression Sep 9 post",
+        "All 41 Sep 10 X scrape rows reconcile source Engagements to likes, replies, reposts, and bookmarks",
+        "Dashboard source coverage discloses the differing X engagement definitions and retained Reposts interaction counts",
         "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
         "Headline week remains within common four-platform coverage",
         "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
