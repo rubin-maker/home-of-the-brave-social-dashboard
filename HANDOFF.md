@@ -21,6 +21,8 @@ The combined headline is therefore labeled **views / impressions**. It is useful
 - Weeks run Monday–Sunday and are assigned by publish date.
 - The reporting week is the latest fully closed week supported by all four platforms. It uses the earliest platform coverage end, while full-file totals retain each platform's own available period.
 - The trend table keeps the latest eight complete weeks.
+- Each platform card's mini bars use that platform's latest eight consecutive publish weeks through its own source cutoff, including zero-post weeks. A cutoff in the middle of a week produces an outlined partial final bar labeled with its exact covered dates and day count.
+- The platform-card headline defaults to the shared Aug 17–23 complete comparison week so the four cards remain directly comparable. Selecting any mini bar updates only that card with the chosen week's exact metrics and coverage status.
 - The Instagram, YouTube, and TikTok category line charts retain every available 2026 publish week. Their axes use week-start dates instead of ISO week numbers, and each chart stops at that platform's latest included publish date.
 - Each category chart includes a thicker dashed **All categories** line that sums every category for that platform and week.
 - Every category-chart point is selectable. Its detail panel lists the top three videos or posts published in that exact week, ranked by the active metric, with exact publish dates and outbound links. In Posts mode, contributors are ranked by views.

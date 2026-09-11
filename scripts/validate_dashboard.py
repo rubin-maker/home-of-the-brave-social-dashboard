@@ -115,6 +115,53 @@ for platform, categories in summary["category_weekly"].items():
             for metric in ("posts", "views", "eng"):
                 assert sum(by_week[week_key][metric] for by_week in categories.values()) == expected[metric]
 
+spark_expected = {
+    "Instagram": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-26",
+                  "posts": 9, "views": 23832, "eng": 713},
+    "YouTube": {"first": "2026-07-20", "last": "2026-09-07", "end": "2026-09-09",
+                "posts": 8, "views": 30905, "eng": 2345},
+    "TikTok": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-27",
+               "posts": 10, "views": 4661, "eng": 470},
+    "X": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-26",
+          "posts": 9, "views": 121567, "eng": 13443},
+}
+spark_checks = {}
+report_week_key = summary["report_scope"]["start"]
+for platform, cutoff_text in summary["platform_coverage_end"].items():
+    cutoff = date.fromisoformat(cutoff_text)
+    weeks = [row for row in category_weeks if date.fromisoformat(row[1]) <= cutoff][-8:]
+    assert len(weeks) == 8
+    assert any(row[0] == report_week_key for row in weeks)
+    rows = []
+    for week_key, start_text, _source_end in weeks:
+        start = date.fromisoformat(start_text)
+        scheduled_end = start + timedelta(days=6)
+        end = min(scheduled_end, cutoff)
+        raw_rows = [post for post in summary["posts"]
+                    if post["platform"] == platform
+                    and start <= date.fromisoformat(post["date"]) <= end]
+        row = {
+            "week": week_key,
+            "start": start_text,
+            "end": end.isoformat(),
+            "complete": end == scheduled_end,
+            "posts": len(raw_rows),
+            "views": sum(post["views"] for post in raw_rows),
+            "eng": sum(post["engagements"] for post in raw_rows),
+        }
+        rows.append(row)
+        if week_key == report_week_key:
+            for metric in ("posts", "views", "eng"):
+                assert row[metric] == summary["report_scope"]["totals"][platform][metric]
+    latest = rows[-1]
+    expected = spark_expected[platform]
+    assert rows[0]["week"] == expected["first"]
+    assert latest["week"] == expected["last"]
+    for metric in ("end", "posts", "views", "eng"):
+        assert latest[metric] == expected[metric], (platform, metric, latest[metric], expected[metric])
+    assert latest["complete"] is False
+    spark_checks[platform] = {"weeks": len(rows), "first": rows[0]["start"], "latest": latest}
+
 dashboard = open(os.path.join(ROOT, "dashboard.html"), encoding="utf-8").read()
 index = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 assert dashboard == index
@@ -126,7 +173,12 @@ assert "dates mark the start of each week" in dashboard
 assert "all available 2026 weekly" in dashboard
 assert "No categories selected — choose Show all" in dashboard
 assert "Deselect all" in dashboard
-assert "Select a bar for that week's exact stats." in dashboard
+assert "Latest 8 available publish weeks." in dashboard
+assert "Latest complete comparison week" in dashboard
+assert "Partial publish week through" in dashboard
+assert "scheduledEnd=shiftDate(start,6)" in dashboard
+assert "spark-fill${week.complete?\"\":\" partial\"}" in dashboard
+assert "partial ${coveredDays(last.start,last.end)}/7 days" in dashboard
 assert "data-spark-platform=" in dashboard
 assert "spark-readout" in dashboard
 assert 'ALL_CATEGORIES="All categories"' in dashboard
@@ -149,6 +201,7 @@ result = {
     "youtubeTotals": youtube,
     "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
     "reportingWeek": summary["report_scope"],
+    "platformCardLatestWeeks": spark_checks,
     "knownWorkbookFormulaErrors": {
         "count": sum(formula_errors.values()),
         "bySheet": formula_errors,
@@ -166,6 +219,7 @@ result = {
         "Category chart axes use readable dates and stop at each platform's latest included publish date",
         "Category charts include Show all and Deselect all controls",
         "Platform cards label their headline units and expose selectable weekly bar details",
+        "Platform mini bars use each source's latest eight consecutive weeks, retain the shared complete-week default, and mark partial final weeks",
         "All categories lines reconcile to platform totals and use a distinct dashed treatment",
         "Selectable category points expose ranked contributing posts with exact publish dates and links",
         "Dashboard and index HTML match",
