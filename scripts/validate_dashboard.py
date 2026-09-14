@@ -327,6 +327,73 @@ for platform, cutoff_text in summary["platform_coverage_end"].items():
     spark_checks[platform] = {"weeks": len(rows), "first": rows[0]["start"],
                               "defaultLatestComplete": default, "latest": latest}
 
+top5_weeks = summary["top5_weeks"]
+assert len(top5_weeks) == 11
+assert [row[0] for row in top5_weeks] == [f"Week {number}" for number in range(27, 38)]
+assert top5_weeks[0] == ["Week 27", "2026-06-29", "2026-07-05"]
+assert top5_weeks[-1] == ["Week 37", "2026-09-07", "2026-09-13"]
+assert summary["top5_default_week"] == "Week 36"
+assert list(summary["top5"]) == [row[0] for row in top5_weeks]
+assert list(summary["top5_coverage"]) == [row[0] for row in top5_weeks]
+
+late_top5_expected = {
+    "Week 35": {
+        "Instagram": ("complete", 22, "2026-08-30", 7),
+        "YouTube": ("complete", 22, "2026-08-30", 7),
+        "TikTok": ("partial", 10, "2026-08-27", 4),
+        "X": ("complete", 16, "2026-08-30", 7),
+    },
+    "Week 36": {
+        "Instagram": ("complete", 29, "2026-09-06", 7),
+        "YouTube": ("complete", 30, "2026-09-06", 7),
+        "TikTok": ("unavailable", 0, None, 0),
+        "X": ("complete", 25, "2026-09-06", 7),
+    },
+    "Week 37": {
+        "Instagram": ("partial", 8, "2026-09-09", 3),
+        "YouTube": ("partial", 8, "2026-09-09", 3),
+        "TikTok": ("unavailable", 0, None, 0),
+        "X": ("partial", 9, "2026-09-09", 3),
+    },
+}
+
+for week_name, start_text, end_text in top5_weeks:
+    for platform, cutoff_text in summary["platform_coverage_end"].items():
+        coverage = summary["top5_coverage"][week_name][platform]
+        assert coverage["source_end"] == cutoff_text
+        if cutoff_text < start_text:
+            expected_status, coverage_end, covered_days = "unavailable", None, 0
+        else:
+            coverage_end = min(end_text, cutoff_text)
+            expected_status = "complete" if coverage_end == end_text else "partial"
+            covered_days = (date.fromisoformat(coverage_end) - date.fromisoformat(start_text)).days + 1
+        assert coverage["status"] == expected_status
+        assert coverage["coverage_end"] == coverage_end
+        assert coverage["covered_days"] == covered_days
+        raw_rows = [
+            post for post in summary["posts"]
+            if post["platform"] == platform
+            and coverage_end is not None
+            and start_text <= post["date"] <= coverage_end
+        ]
+        assert coverage["posts"] == len(raw_rows)
+        expected_top5 = sorted(
+            raw_rows,
+            key=lambda post: (-post["views"], post["date"], post["id"]),
+        )[:5]
+        actual_top5 = summary["top5"][week_name][platform]
+        assert [post["id"] for post in actual_top5] == [post["id"] for post in expected_top5]
+        assert all(start_text <= post["date"] <= coverage_end for post in actual_top5) if coverage_end else not actual_top5
+
+for week_name, by_platform in late_top5_expected.items():
+    for platform, (status, posts, coverage_end, covered_days) in by_platform.items():
+        coverage = summary["top5_coverage"][week_name][platform]
+        assert (coverage["status"], coverage["posts"], coverage["coverage_end"], coverage["covered_days"]) == (
+            status, posts, coverage_end, covered_days,
+        )
+        if status != "unavailable":
+            assert len(summary["top5"][week_name][platform]) == 5
+
 dashboard = open(os.path.join(ROOT, "dashboard.html"), encoding="utf-8").read()
 index = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 assert dashboard == index
@@ -358,6 +425,20 @@ assert 'data-point-week=' in dashboard
 assert 'Posts behind this point' in dashboard
 assert 'Open video / post' in dashboard
 assert '"cw":"2026-01-01"' in dashboard
+assert "Coverage differs by platform. Results are marked complete, partial, or unavailable." in dashboard
+assert '"top5DefaultWeek":"Week 36"' in dashboard
+assert '"Week 37","2026-09-07","2026-09-13"' in dashboard
+assert "D.top5Weeks.map" in dashboard
+assert "topWeekOptionStatus" in dashboard
+assert "renderTops(D.top5DefaultWeek)" in dashboard
+assert "Source unavailable after" in dashboard
+assert "This is unavailable data, not a measured zero." in dashboard
+assert "No posts published during the available partial coverage period." in dashboard
+assert "Complete source coverage, with no posts published in this week." in dashboard
+assert 'role="tabpanel" aria-live="polite"' in dashboard
+assert 'aria-controls="tops"' in dashboard
+assert "tabs.scrollLeft=Math.max" in dashboard
+assert '.filter(x=>x.v>0)' not in dashboard
 
 with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="") as handle:
     post_rows = list(csv.DictReader(handle))
@@ -403,6 +484,13 @@ result = {
     "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
     "reportingWeek": summary["report_scope"],
     "platformCardLatestWeeks": spark_checks,
+    "topFiveWeeks": {
+        "weeks": len(top5_weeks),
+        "first": top5_weeks[0],
+        "last": top5_weeks[-1],
+        "default": summary["top5_default_week"],
+        "lateCoverage": late_top5_expected,
+    },
     "knownWorkbookFormulaErrors": {
         "count": sum(formula_errors.values()),
         "bySheet": formula_errors,
@@ -432,6 +520,10 @@ result = {
         "Dashboard and index HTML match",
         "All-post CSV row counts reconcile to the dashboard summary",
         "Every all-post CSV row retains its publish-week label, including new posts after the shared comparison window",
+        "Top-five rankings extend from Week 27 through Week 37 without changing the shared Week 34 headline",
+        "Weeks 35–37 reconcile to their source-covered dates and expose complete, partial, and unavailable platform states",
+        "Unavailable platform coverage remains distinct from a covered week with zero posts",
+        "Top-five ordering and cutoff compliance reconcile to the normalized post rows for every displayed platform-week",
     ],
 }
 with open(os.path.join(ROOT, "validation.json"), "w", encoding="utf-8") as handle:

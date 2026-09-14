@@ -22,6 +22,10 @@ scope_label = span(report["start"], report["end"])
 period_label = span(source["period"]["start"], source["period"]["end"])
 year = source["period"]["end"][:4]
 week_labels = {name: f"{name.replace('Week ', 'W')} · {span(start, end)}" for name, start, end in source["weeks"]}
+top5_week_labels = {
+    name: f"{name.replace('Week ', 'W')} · {span(start, end)}"
+    for name, start, end in source["top5_weeks"]
+}
 
 
 def category_week_key(post_date):
@@ -42,6 +46,7 @@ data = {
     "subscribers": source["youtube_subscribers"],
     "scope": report,
     "weeks": source["weeks"],
+    "top5Weeks": source["top5_weeks"],
     "categoryWeeks": source["category_weeks"],
     "coverage": source["platform_coverage_end"],
     "weekly": source["weekly"],
@@ -49,13 +54,16 @@ data = {
         week: {platform: [slim(post) for post in posts] for platform, posts in by_platform.items()}
         for week, by_platform in source["top5"].items()
     },
+    "top5Coverage": source["top5_coverage"],
     "categories": source["category_totals"],
     "categoryWeekly": source["category_weekly"],
     "definitions": source["metric_definitions"],
     "sources": source["source_notes"],
     "posts": [slim(post) for post in sorted(source["posts"], key=lambda post: -post["views"])],
     "wlbl": week_labels,
+    "top5Wlbl": top5_week_labels,
     "reportWeek": report["week"],
+    "top5DefaultWeek": source["top5_default_week"],
 }
 
 palette = {
@@ -98,6 +106,8 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 .up{color:var(--good)}.down{color:var(--bad)}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 .tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:7px}.tabs button,.select,input{font:inherit;border:1px solid var(--axis);border-radius:9px;background:var(--surface);color:var(--ink)}
 .tabs button{padding:7px 12px;cursor:pointer;white-space:nowrap}.tabs button.on{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.week-tabs button{display:flex;flex-direction:column;align-items:flex-start;gap:1px}.week-tab-state{font-size:9px;line-height:1.2;text-transform:uppercase;letter-spacing:.045em;color:var(--muted)}.week-tabs button.on .week-tab-state{color:currentColor;opacity:.76}
+.week-select-wrap{display:none;margin-bottom:10px;font-size:12px;color:var(--ink2)}.top-week-summary{font-size:12px;color:var(--ink2);margin:3px 0 9px}.top-platform{padding-top:15px;border-top:1px solid var(--grid)}.top-platform:first-child{padding-top:7px;border-top:0}.top-platform-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:7px}.top-platform-head h3{margin:0}.top-coverage{font-size:11px;color:var(--ink2);text-align:right}.top-coverage.partial{color:#9a5d00}.top-coverage.unavailable{color:var(--bad)}.top-empty{font-size:12px;color:var(--muted);padding:5px 0 12px}
 .category-charts{display:grid;gap:14px}.chart-card{overflow:hidden}.chart-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:8px}.chart-meta{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}.chart-reset{font:inherit;font-size:11px;border:1px solid var(--axis);border-radius:999px;background:var(--surface2);color:var(--ink);padding:4px 8px;cursor:pointer}
 .chart-wrap{overflow-x:auto;overscroll-behavior-inline:contain}.line-chart{display:block;width:auto;min-width:100%;height:auto}.category-legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .category-key{font:inherit;font-size:11px;border:1px solid var(--grid);border-radius:999px;background:var(--surface2);color:var(--ink);padding:4px 8px;cursor:pointer}.category-key.total{font-weight:750;border-color:var(--category)}
@@ -111,7 +121,7 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 .sources{margin:0;padding-left:18px}.sources li{margin:5px 0;color:var(--ink2)}
 .footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--axis);color:var(--muted);font-size:11px}
 @media(max-width:900px){.hero,.platform-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mast{display:block}.stamp{text-align:left;margin-top:18px}}
-@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid,.subscriber-card{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}.chart-head{align-items:flex-start;flex-direction:column;gap:8px}.chart-meta{justify-content:space-between;width:100%}.point-detail-head{display:block}.point-total{margin-top:5px}.point-post{grid-template-columns:25px minmax(0,1fr)}.point-post-stats{grid-column:2;text-align:left;white-space:normal;margin-top:0}}
+@media(max-width:620px){body{padding-left:13px;padding-right:13px}.hero,.platform-grid,.metric-grid,.subscriber-card{grid-template-columns:1fr}.controls{grid-template-columns:1fr}.card{padding:15px}.mast{padding-top:28px}.chart-head{align-items:flex-start;flex-direction:column;gap:8px}.chart-meta{justify-content:space-between;width:100%}.point-detail-head{display:block}.point-total{margin-top:5px}.point-post{grid-template-columns:25px minmax(0,1fr)}.point-post-stats{grid-column:2;text-align:left;white-space:normal;margin-top:0}.week-tabs{display:none}.week-select-wrap{display:block}.top-platform-head{display:block}.top-coverage{text-align:left;margin-top:2px}}
 @media print{body{padding:0;background:#fff}.card{box-shadow:none;break-inside:avoid}.tabs,.controls{display:none}.wrap{max-width:none}}
 </style></head><body><div class="wrap">
 <header class="mast"><div><div class="eyebrow">2026 social intelligence</div><h1>__BRAND__ performance dashboard</h1>
@@ -138,8 +148,8 @@ tbody tr:last-child td{border-bottom:0}tr.total td{font-weight:750;border-top:1p
 <section><div class="section-head"><div><h2>Year-to-date category performance</h2><div class="note">Categories follow the reviewed labels in each source workbook.</div></div></div>
 <div class="card"><div class="tabs" id="categoryTabs"></div><div id="categories"></div></div></section>
 
-<section><div class="section-head"><div><h2>Top five posts by platform</h2><div class="note">Select one of the eight complete context weeks.</div></div></div>
-<div class="card"><div class="tabs" id="weekTabs"></div><div id="tops"></div></div></section>
+<section><div class="section-head"><div><h2>Top five posts by platform</h2><div class="note">Coverage differs by platform. Results are marked complete, partial, or unavailable.</div></div></div>
+<div class="card"><div class="tabs week-tabs" id="weekTabs" role="tablist" aria-label="Publish week"></div><label class="week-select-wrap" for="weekSelect">Publish week<select class="select" id="weekSelect"></select></label><div class="top-week-summary" id="topWeekSummary" aria-live="polite"></div><div id="tops" role="tabpanel" aria-live="polite"></div></div></section>
 
 <section><div class="section-head"><div><h2>All-posts explorer</h2><div class="note">Searches the full year-to-date dataset; rows are ranked by views/impressions.</div></div></div>
 <div class="card"><div class="controls"><input id="search" placeholder="Search post text or category…"><select class="select" id="platformFilter"></select></div>
@@ -314,12 +324,16 @@ function renderCategories(platform){document.querySelectorAll("#categoryTabs but
  rows.map(x=>`<tr><td>${esc(x.category)}</td><td class="n">${full(x.posts)}</td><td class="n">${full(x.views)}</td><td class="n">${full(x.avg_views)}</td><td class="n">${full(x.eng)}</td><td class="n">${x.er??"—"}%</td></tr>`).join("")+`</tbody></table></div>`}
 document.querySelectorAll("#categoryTabs button").forEach(b=>b.addEventListener("click",()=>renderCategories(b.dataset.p)));renderCategories(PLATS[0]);
 
-document.getElementById("weekTabs").innerHTML=D.weeks.map(w=>`<button data-w="${esc(w[0])}">${esc(D.wlbl[w[0]])}</button>`).join("");
-function renderTops(week){document.querySelectorAll("#weekTabs button").forEach(b=>b.classList.toggle("on",b.dataset.w===week));
- document.getElementById("tops").innerHTML=PLATS.map(p=>{const rows=(D.top5[week][p]||[]).filter(x=>x.v>0);if(!rows.length)return "";
- return `<h3 style="margin-top:18px"><span class="dot" style="--platform:${PC[p]}"></span>${p}</h3><div class="scroll"><table><thead><tr><th class="n">#</th><th>Date</th><th>Category</th><th>Post</th><th class="n">${D.definitions[p].metric_label}</th><th class="n">Eng.</th></tr></thead><tbody>`+
- rows.map((x,i)=>`<tr><td class="n">${i+1}</td><td>${x.d.slice(5)}</td><td>${esc(x.c)}</td><td>${x.u?`<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)||"(no text)"}</a>`:esc(x.t)}</td><td class="n">${full(x.v)}</td><td class="n">${full(x.e)}</td></tr>`).join("")+`</tbody></table></div>`}).join("")||`<div class="note">No posts in this week.</div>`}
-document.querySelectorAll("#weekTabs button").forEach(b=>b.addEventListener("click",()=>renderTops(b.dataset.w)));renderTops(D.reportWeek);
+const topWeekStatus=week=>{const entries=Object.entries(D.top5Coverage[week]),complete=entries.filter(([,row])=>row.status==="complete").length,partial=entries.filter(([,row])=>row.status==="partial").map(([platform])=>platform),unavailable=entries.filter(([,row])=>row.status==="unavailable").map(([platform])=>platform);if(complete===PLATS.length)return "All sources complete";if(unavailable.length)return `${complete} complete${partial.length?` · ${partial.length} partial`:""} · ${unavailable.join(", ")} unavailable`;return `${complete} complete · ${partial.length} partial`};
+const topWeekOptionStatus=week=>{const rows=Object.values(D.top5Coverage[week]),partial=rows.some(row=>row.status==="partial"),unavailable=Object.entries(D.top5Coverage[week]).filter(([,row])=>row.status==="unavailable").map(([platform])=>`no ${platform} data`);if(rows.every(row=>row.status==="complete"))return "complete";if(partial&&unavailable.length)return `partial · ${unavailable.join(", ")}`;if(unavailable.length)return unavailable.join(", ");return "mixed coverage"};
+document.getElementById("weekTabs").innerHTML=D.top5Weeks.map(w=>`<button type="button" role="tab" aria-controls="tops" aria-selected="false" data-w="${esc(w[0])}"><span>${esc(D.top5Wlbl[w[0]])}</span><span class="week-tab-state">${esc(topWeekStatus(w[0]))}</span></button>`).join("");
+document.getElementById("weekSelect").innerHTML=[...D.top5Weeks].reverse().map(w=>`<option value="${esc(w[0])}">${esc(D.top5Wlbl[w[0]])} · ${esc(topWeekOptionStatus(w[0]))}</option>`).join("");
+const topCoverageText=(week,platform)=>{const row=D.top5Coverage[week][platform],weekStart=D.top5Weeks.find(item=>item[0]===week)[1];if(row.status==="complete")return `Complete week · ${full(row.posts)} posts`;if(row.status==="partial")return `Partial coverage · ${chartDate(weekStart)}–${chartDate(row.coverage_end)} · ${row.covered_days} of 7 days · ${full(row.posts)} posts`;return `Source unavailable after ${chartDate(row.source_end)} — not zero posts`};
+function renderTops(week){const tabs=document.getElementById("weekTabs");document.querySelectorAll("#weekTabs button").forEach(b=>{const selected=b.dataset.w===week;b.classList.toggle("on",selected);b.setAttribute("aria-selected",String(selected));b.tabIndex=selected?0:-1});const selectedButton=tabs.querySelector('[aria-selected="true"]');if(selectedButton&&tabs.clientWidth)tabs.scrollLeft=Math.max(0,selectedButton.offsetLeft+selectedButton.offsetWidth-tabs.clientWidth);document.getElementById("weekSelect").value=week;document.getElementById("topWeekSummary").textContent=`${D.top5Wlbl[week]} · ${topWeekStatus(week)}`;
+ document.getElementById("tops").innerHTML=PLATS.map(p=>{const coverage=D.top5Coverage[week][p],rows=D.top5[week][p]||[],coverageText=topCoverageText(week,p);const content=coverage.status==="unavailable"?`<div class="top-empty">No source coverage for this week. This is unavailable data, not a measured zero.</div>`:rows.length?`<div class="scroll"><table><thead><tr><th class="n">#</th><th>Date</th><th>Category</th><th>Post</th><th class="n">${D.definitions[p].metric_label}</th><th class="n">Eng.</th></tr></thead><tbody>`+rows.map((x,i)=>`<tr><td class="n">${i+1}</td><td>${x.d.slice(5)}</td><td>${esc(x.c)}</td><td>${x.u?`<a href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.t)||"(no text)"}</a>`:esc(x.t)}</td><td class="n">${full(x.v)}</td><td class="n">${full(x.e)}</td></tr>`).join("")+`</tbody></table></div>`:coverage.status==="partial"?`<div class="top-empty">No posts published during the available partial coverage period.</div>`:`<div class="top-empty">Complete source coverage, with no posts published in this week.</div>`;
+ return `<div class="top-platform"><div class="top-platform-head"><h3><span class="dot" style="--platform:${PC[p]}"></span>${p}</h3><div class="top-coverage ${coverage.status}">${esc(coverageText)}</div></div>${content}</div>`}).join("")}
+document.querySelectorAll("#weekTabs button").forEach(b=>{b.addEventListener("click",()=>renderTops(b.dataset.w));b.addEventListener("keydown",event=>{if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;event.preventDefault();const buttons=[...document.querySelectorAll("#weekTabs button")],index=buttons.indexOf(b),next=event.key==="Home"?0:event.key==="End"?buttons.length-1:(index+(event.key==="ArrowRight"?1:-1)+buttons.length)%buttons.length;buttons[next].focus();renderTops(buttons[next].dataset.w)})});
+document.getElementById("weekSelect").addEventListener("change",event=>renderTops(event.target.value));renderTops(D.top5DefaultWeek);
 
 document.getElementById("platformFilter").innerHTML=`<option value="">All platforms</option>`+PLATS.map(p=>`<option>${p}</option>`).join("");
 function renderAll(){const q=document.getElementById("search").value.trim().toLowerCase(),p=document.getElementById("platformFilter").value;

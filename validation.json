@@ -229,6 +229,100 @@
       }
     }
   },
+  "topFiveWeeks": {
+    "weeks": 11,
+    "first": [
+      "Week 27",
+      "2026-06-29",
+      "2026-07-05"
+    ],
+    "last": [
+      "Week 37",
+      "2026-09-07",
+      "2026-09-13"
+    ],
+    "default": "Week 36",
+    "lateCoverage": {
+      "Week 35": {
+        "Instagram": [
+          "complete",
+          22,
+          "2026-08-30",
+          7
+        ],
+        "YouTube": [
+          "complete",
+          22,
+          "2026-08-30",
+          7
+        ],
+        "TikTok": [
+          "partial",
+          10,
+          "2026-08-27",
+          4
+        ],
+        "X": [
+          "complete",
+          16,
+          "2026-08-30",
+          7
+        ]
+      },
+      "Week 36": {
+        "Instagram": [
+          "complete",
+          29,
+          "2026-09-06",
+          7
+        ],
+        "YouTube": [
+          "complete",
+          30,
+          "2026-09-06",
+          7
+        ],
+        "TikTok": [
+          "unavailable",
+          0,
+          null,
+          0
+        ],
+        "X": [
+          "complete",
+          25,
+          "2026-09-06",
+          7
+        ]
+      },
+      "Week 37": {
+        "Instagram": [
+          "partial",
+          8,
+          "2026-09-09",
+          3
+        ],
+        "YouTube": [
+          "partial",
+          8,
+          "2026-09-09",
+          3
+        ],
+        "TikTok": [
+          "unavailable",
+          0,
+          null,
+          0
+        ],
+        "X": [
+          "partial",
+          9,
+          "2026-09-09",
+          3
+        ]
+      }
+    }
+  },
   "knownWorkbookFormulaErrors": {
     "count": 1002,
     "bySheet": {
@@ -270,6 +364,10 @@
     "Selectable category points expose ranked contributing posts with exact publish dates and links",
     "Dashboard and index HTML match",
     "All-post CSV row counts reconcile to the dashboard summary",
-    "Every all-post CSV row retains its publish-week label, including new posts after the shared comparison window"
+    "Every all-post CSV row retains its publish-week label, including new posts after the shared comparison window",
+    "Top-five rankings extend from Week 27 through Week 37 without changing the shared Week 34 headline",
+    "Weeks 35–37 reconcile to their source-covered dates and expose complete, partial, and unavailable platform states",
+    "Unavailable platform coverage remains distinct from a covered week with zero posts",
+    "Top-five ordering and cutoff compliance reconcile to the normalized post rows for every displayed platform-week"
   ]
 }

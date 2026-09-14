@@ -23,6 +23,7 @@ For X, the dashboard preserves the source-reported `Engagements` field. Analytic
 - Weeks run Monday–Sunday and are assigned by publish date.
 - The reporting week is the latest fully closed week supported by all four platforms. It uses the earliest platform coverage end, while full-file totals retain each platform's own available period.
 - The trend table keeps the latest eight complete weeks.
+- The top-five selector retains those shared context weeks and extends through the latest publish week available in any source. It opens on the newest week with no partially covered platform; newer partial weeks remain selectable. Each platform remains visible and is labeled complete, partial, or unavailable; unavailable coverage is never presented as zero posts.
 - Each platform card's mini bars use that platform's latest eight consecutive publish weeks through its own source cutoff, including zero-post weeks. A cutoff in the middle of a week produces an outlined partial final bar labeled with its exact covered dates and day count.
 - Each platform-card headline defaults to that source's latest complete week and shows the exact date range; the hero and trend table retain the shared complete comparison week. Selecting any mini bar updates only that card with the chosen week's exact metrics and coverage status.
 - The Instagram, YouTube, and TikTok category line charts retain every available 2026 publish week. Their axes use week-start dates instead of ISO week numbers, and each chart stops at that platform's latest included publish date.
@@ -37,7 +38,7 @@ For X, the dashboard preserves the source-reported `Engagements` field. Analytic
 2. Confirm the reported week is fully complete for all four sources.
 3. Scan the final days in `all_posts.csv` for unexpected zero-value or duplicate rows.
 4. Check that old weeks do not move unexpectedly when replacing a workbook.
-5. Open `dashboard.html` and test the selectable eight-week platform bars, category tabs, **Show all** and **Deselect all** controls, full-year category-chart scrolling and date labels, week tabs, platform filter, search, and outbound post links.
+5. Open `dashboard.html` and test the selectable eight-week platform bars, category tabs, **Show all** and **Deselect all** controls, full-year category-chart scrolling and date labels, top-five week tabs and mobile selector (including partial and unavailable states), platform filter, search, and outbound post links.
 
 ## 2026 source coverage in this build
 

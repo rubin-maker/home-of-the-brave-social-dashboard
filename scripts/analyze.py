@@ -283,6 +283,21 @@ for start in context_starts:
     name = f"Week {start.isocalendar().week}"
     weeks.append([name, start.isoformat(), end.isoformat()])
 
+# Top-post rankings keep the existing comparison context and extend through the
+# latest publish week available in any source. Unlike `weeks`, this list is not
+# restricted to the last week complete across all four platforms.
+top5_weeks = []
+top5_cursor = context_starts[0]
+top5_last_start = monday_of(period_end)
+while top5_cursor <= top5_last_start:
+    top5_end = top5_cursor + timedelta(days=6)
+    top5_weeks.append([
+        f"Week {top5_cursor.isocalendar().week}",
+        top5_cursor.isoformat(),
+        top5_end.isoformat(),
+    ])
+    top5_cursor += timedelta(days=7)
+
 for post in posts:
     post_week_start = monday_of(post["date"])
     post["week"] = f"Week {post_week_start.isocalendar().week}"
@@ -356,14 +371,51 @@ assert sum(row["gained"] for row in subscriber_weeks) == youtube_subscribers["ga
 assert sum(row["video_count"] for row in subscriber_weeks) == youtube_subscribers["video_count"]
 assert all(row["long_form"] + row["shorts"] == row["gained"] for row in subscriber_weeks)
 weekly = {}
-top5 = {}
 for name, start, end in weeks:
     weekly[name] = {}
-    top5[name] = {}
     for platform in platforms:
         subset = [x for x in posts if x["platform"] == platform and start <= x["date"] <= end]
         weekly[name][platform] = aggregate(subset)
+
+top5 = {}
+top5_coverage = {}
+for name, start, end in top5_weeks:
+    top5[name] = {}
+    top5_coverage[name] = {}
+    for platform in platforms:
+        source_end = platform_ends[platform]
+        if source_end < start:
+            subset = []
+            coverage_end = None
+            status = "unavailable"
+            covered_days = 0
+        else:
+            coverage_end = min(end, source_end)
+            subset = [
+                x for x in posts
+                if x["platform"] == platform and start <= x["date"] <= coverage_end
+            ]
+            status = "complete" if coverage_end == end else "partial"
+            covered_days = (
+                date.fromisoformat(coverage_end) - date.fromisoformat(start)
+            ).days + 1
         top5[name][platform] = sorted(subset, key=lambda x: (-x["views"], x["date"], x["id"]))[:5]
+        top5_coverage[name][platform] = {
+            "status": status,
+            "source_end": source_end,
+            "coverage_end": coverage_end,
+            "covered_days": covered_days,
+            "posts": len(subset),
+        }
+
+top5_default_week = next(
+    (
+        name for name, _start, _end in reversed(top5_weeks)
+        if any(row["status"] == "complete" for row in top5_coverage[name].values())
+        and not any(row["status"] == "partial" for row in top5_coverage[name].values())
+    ),
+    top5_weeks[-1][0],
+)
 
 report_name = weeks[-1][0]
 report_posts = [p for p in posts if report_start.isoformat() <= p["date"] <= report_end.isoformat()]
@@ -428,12 +480,15 @@ summary = {
     "platform_coverage_end": platform_ends,
     "common_coverage_end": common_coverage_end,
     "weeks": weeks,
+    "top5_weeks": top5_weeks,
     "category_weeks": category_weeks,
     "report_scope": report_scope,
     "totals": totals,
     "youtube_subscribers": youtube_subscribers,
     "weekly": weekly,
     "top5": top5,
+    "top5_coverage": top5_coverage,
+    "top5_default_week": top5_default_week,
     "category_totals": category_totals,
     "category_weekly": category_weekly,
     "metric_definitions": METRIC_DEFINITIONS,
