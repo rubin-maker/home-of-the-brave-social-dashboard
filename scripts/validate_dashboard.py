@@ -235,6 +235,16 @@ assert subscribers["complete_through"] == "2026-09-10"
 assert sum(row["gained"] for row in subscribers["weekly"]) == subscribers["gained"]
 assert sum(row["video_count"] for row in subscribers["weekly"]) == subscribers["video_count"]
 
+follower_metrics = summary["follower_metrics"]
+assert follower_metrics["Instagram"] == {
+    "available": True, "label": "Follows", "unit": "follows", "source_field": "Follows",
+}
+assert follower_metrics["YouTube"] == {
+    "available": True, "label": "Subscribers", "unit": "subscribers", "source_field": "Subscribers",
+}
+assert follower_metrics["TikTok"]["available"] is False and follower_metrics["TikTok"]["source_field"] is None
+assert follower_metrics["X"]["available"] is False and follower_metrics["X"]["source_field"] is None
+
 # Freshness and calendar coverage.
 expected_coverage = {"YouTube": "2026-09-18", "Instagram": "2026-09-18", "TikTok": "2026-09-18", "X": "2026-09-18"}
 expected_complete = {**expected_coverage, "YouTube": "2026-09-10"}
@@ -259,6 +269,16 @@ assert summary["report_scope"]["week"] == "Week 36"
 all_posts = summary["posts"]
 assert len(all_posts) == sum(total["posts"] for total in summary["totals"].values())
 assert all(post["date"].startswith("2026-") and post["week"] and post["category"] for post in all_posts)
+instagram_follows_by_id = {clean(row["Post ID"]): int(number(row["Follows"])) for row in raw["Instagram"]}
+youtube_subscribers_by_id = {
+    clean(row["Content"]): int(number(row["Subscribers"]))
+    for row in long_2026 + base_shorts
+}
+for post in all_posts:
+    if post["platform"] == "Instagram":
+        assert post["followers"] == instagram_follows_by_id[post["id"]]
+    elif post["platform"] == "YouTube":
+        assert post["followers"] == youtube_subscribers_by_id[post["id"]]
 for platform in expected_latest_post:
     assert max(post["date"] for post in all_posts if post["platform"] == platform) == expected_latest_post[platform]
 
@@ -295,9 +315,30 @@ for platform, categories in summary["category_weekly"].items():
             assert value["posts"] == len(rows)
             assert value["views"] == sum(post["views"] for post in rows)
             assert value["eng"] == sum(post["engagements"] for post in rows)
+            if follower_metrics[platform]["available"]:
+                assert value["followers"] == sum(post["followers"] for post in rows)
         total = next(row for row in summary["category_totals"][platform] if row["category"] == category)
-        for metric in ("posts", "views", "eng"):
+        metrics = ("posts", "views", "eng", "followers") if follower_metrics[platform]["available"] else ("posts", "views", "eng")
+        for metric in metrics:
             assert sum(row[metric] for row in by_week.values() if row is not None) == total[metric]
+
+
+def category_week_total(platform, week_key, metric):
+    return sum(
+        by_week[week_key][metric]
+        for by_week in summary["category_weekly"][platform].values()
+        if by_week[week_key] is not None
+    )
+
+
+assert category_week_total("Instagram", "2026-08-31", "followers") == 394
+assert category_week_total("Instagram", "2026-09-07", "followers") == 3015
+assert category_week_total("Instagram", "2026-09-14", "followers") == 47
+assert category_week_total("YouTube", "2026-08-31", "followers") == 123
+assert category_week_total("YouTube", "2026-09-07", "followers") == 81
+assert category_week_total("YouTube", "2026-09-14", "followers") == 0
+assert summary["category_weekly"]["Instagram"]["Produced Videos"]["2026-09-07"]["followers"] == 2656
+assert summary["category_weekly"]["YouTube"]["Social Ads"]["2026-04-06"]["followers"] == -1
 
 # Top-five coverage and ordering.
 top5_weeks = summary["top5_weeks"]
@@ -343,6 +384,11 @@ required_html = [
     "YouTube subscriber metric",
     "Deselect all",
     "Show all",
+    "Subscribers / Follows",
+    "Follower data unavailable",
+    "not an account balance or a record of when audience changes occurred",
+    "This is unavailable data, not a measured zero.",
+    "chartDomain",
     "Posts behind this point",
     "Open video / post",
     "Partial source mix",
@@ -352,7 +398,6 @@ required_html = [
     '\"Week 38\",\"2026-09-14\",\"2026-09-20\"',
     '\"completeThrough\"',
     "Source unavailable after",
-    "This is unavailable data, not a measured zero.",
 ]
 for text in required_html:
     assert text in dashboard, text
@@ -367,6 +412,7 @@ for platform, expected in summary["totals"].items():
     assert len(rows) == expected["posts"]
     assert sum(int(row["Views / Impressions"]) for row in rows) == expected["views"]
     assert sum(int(row["Engagements"]) for row in rows) == expected["eng"]
+    assert sum(int(row["Followers / Subs"]) for row in rows) == expected["followers"]
 assert all(row["Week"] and row["Date"] and row["Category"] for row in normalized)
 
 result = {
@@ -406,6 +452,9 @@ result = {
         "Mixed YouTube freshness is distinct from measured zero activity",
         "Headline week is the latest complete shared Monday-Sunday week",
         "Category weeks and top-five rankings reconcile to normalized posts",
+        "Instagram Follows and YouTube Subscribers reconcile by post, category, and publish week",
+        "TikTok and X subscriber/follow metrics are explicitly unavailable rather than zero",
+        "Subscriber/follow chart supports signed YouTube adjustments",
         "Dashboard and index HTML match the normalized data layer",
         "all_posts.csv reconciles to every platform total",
     ],

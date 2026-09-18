@@ -12919,22 +12919,53 @@
   ]
  ],
  "common_coverage_end": "2026-09-10",
+ "follower_metrics": {
+  "Instagram": {
+   "available": true,
+   "label": "Follows",
+   "source_field": "Follows",
+   "unit": "follows"
+  },
+  "TikTok": {
+   "available": false,
+   "label": "Follows",
+   "reason": "The supplied TikTok export has no follows or subscriber field.",
+   "source_field": null,
+   "unit": "follows"
+  },
+  "X": {
+   "available": false,
+   "label": "Follows",
+   "reason": "New Follows is not consistently available across the merged X source feeds.",
+   "source_field": null,
+   "unit": "follows"
+  },
+  "YouTube": {
+   "available": true,
+   "label": "Subscribers",
+   "source_field": "Subscribers",
+   "unit": "subscribers"
+  }
+ },
  "metric_definitions": {
   "Instagram": {
    "audience": "Reach",
    "engagements": "Likes + comments + shares + saves",
+   "follows": "Source-reported Follows attributed to posts; not the current Instagram account follower balance.",
    "metric_label": "views",
    "views": "Views"
   },
   "TikTok": {
    "audience": "Not available",
    "engagements": "Likes + comments + shares + bookmarks",
+   "follows": "Not available in the supplied TikTok export.",
    "metric_label": "views",
    "views": "Views"
   },
   "X": {
    "audience": "Not available",
    "engagements": "Source-reported total engagements",
+   "follows": "Not consistently available across the merged X source feeds.",
    "metric_label": "impressions",
    "views": "Impressions (reported as Views in the source workbook)"
   },
@@ -70364,6 +70395,7 @@
   "YouTube: Sep 18 long-form snapshot with 57 included long-form videos and 478 retained Shorts.",
   "YouTube Shorts limitation: the full Shorts catalog and non-Likes metrics remain from the reviewed Sep 10 workbook. The Sep 18 file supplies daily Likes through Sep 17 for only 5 existing Shorts; those Likes were refreshed without treating missing Shorts data as zero.",
   "YouTube subscriber metric: sum of the source-reported Subscribers column across included videos. It is not the current channel subscriber total or week-by-week channel growth.",
+  "Weekly subscriber/follow trends use Instagram Follows and YouTube Subscribers attributed to posts or videos, grouped by publish week. They are current source snapshots, not account balances or a record of when audience changes occurred; TikTok has no comparable field in the supplied export.",
   "YouTube exclusions: aggregate rows, undated videos, and videos outside 2026 are omitted from dashboard analysis.",
   "Instagram: publishing coverage through 2026-09-18; 659 posts, with the latest published post on 2026-09-17. One Sep 17 Empathy Tour collaboration remains flagged in the source for authorship review and is included.",
   "TikTok: publishing coverage through 2026-09-18; 636 posts, with the latest published post on 2026-09-17. Engagements are recomputed as Likes + Comments + Shares + Bookmarks for every row because 8 source Total Engagements cells disagree with their components (80,838 source total versus 81,331 component total).",

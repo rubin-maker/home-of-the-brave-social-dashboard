@@ -46,18 +46,50 @@ METRIC_DEFINITIONS = {
         "engagements": "Likes + comments + shares + saves",
         "audience": "Reach",
         "metric_label": "views",
+        "follows": "Source-reported Follows attributed to posts; not the current Instagram account follower balance.",
     },
     "TikTok": {
         "views": "Views",
         "engagements": "Likes + comments + shares + bookmarks",
         "audience": "Not available",
         "metric_label": "views",
+        "follows": "Not available in the supplied TikTok export.",
     },
     "X": {
         "views": "Impressions (reported as Views in the source workbook)",
         "engagements": "Source-reported total engagements",
         "audience": "Not available",
         "metric_label": "impressions",
+        "follows": "Not consistently available across the merged X source feeds.",
+    },
+}
+
+FOLLOWER_METRICS = {
+    "YouTube": {
+        "available": True,
+        "label": "Subscribers",
+        "unit": "subscribers",
+        "source_field": "Subscribers",
+    },
+    "Instagram": {
+        "available": True,
+        "label": "Follows",
+        "unit": "follows",
+        "source_field": "Follows",
+    },
+    "TikTok": {
+        "available": False,
+        "label": "Follows",
+        "unit": "follows",
+        "source_field": None,
+        "reason": "The supplied TikTok export has no follows or subscriber field.",
+    },
+    "X": {
+        "available": False,
+        "label": "Follows",
+        "unit": "follows",
+        "source_field": None,
+        "reason": "New Follows is not consistently available across the merged X source feeds.",
     },
 }
 
@@ -595,6 +627,9 @@ source_notes = [
     f"{len(shorts_patch_ids)} existing Shorts; those Likes were refreshed without treating missing Shorts data as zero.",
     "YouTube subscriber metric: sum of the source-reported Subscribers column across included videos. "
     "It is not the current channel subscriber total or week-by-week channel growth.",
+    "Weekly subscriber/follow trends use Instagram Follows and YouTube Subscribers attributed to posts or videos, "
+    "grouped by publish week. They are current source snapshots, not account balances or a record of when audience changes occurred; "
+    "TikTok has no comparable field in the supplied export.",
     "YouTube exclusions: aggregate rows, undated videos, and videos outside 2026 are omitted from dashboard analysis.",
     f"Instagram: publishing coverage through {platform_ends['Instagram']}; "
     f"{totals['Instagram']['posts']} posts, with the latest published post on {platform_latest_posts['Instagram']}. "
@@ -633,6 +668,7 @@ summary = {
     "category_totals": category_totals,
     "category_weekly": category_weekly,
     "metric_definitions": METRIC_DEFINITIONS,
+    "follower_metrics": FOLLOWER_METRICS,
     "source_notes": source_notes,
     "posts": posts,
 }

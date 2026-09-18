@@ -9,6 +9,9 @@
     "Mixed YouTube freshness is distinct from measured zero activity",
     "Headline week is the latest complete shared Monday-Sunday week",
     "Category weeks and top-five rankings reconcile to normalized posts",
+    "Instagram Follows and YouTube Subscribers reconcile by post, category, and publish week",
+    "TikTok and X subscriber/follow metrics are explicitly unavailable rather than zero",
+    "Subscriber/follow chart supports signed YouTube adjustments",
     "Dashboard and index HTML match the normalized data layer",
     "all_posts.csv reconciles to every platform total"
   ],
