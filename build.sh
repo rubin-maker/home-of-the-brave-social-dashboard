@@ -10,7 +10,7 @@ if ! "$PYTHON_BIN" -c "import openpyxl" >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "==> 1/4  Normalize four HOTB workbooks"
+echo "==> 1/4  Normalize reviewed HOTB source exports"
 "$PYTHON_BIN" scripts/analyze.py
 echo "==> 2/4  Build self-contained dashboard.html"
 "$PYTHON_BIN" scripts/build_dashboard.py

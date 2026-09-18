@@ -1,533 +1,416 @@
 #!/usr/bin/env python3
-"""Validate the generated dashboard against the included source rows."""
+"""Validate generated HOTB outputs against all six current source files."""
 
 import csv
 import hashlib
 import json
 import os
-from collections import Counter
+from collections import defaultdict
 from datetime import date, datetime, timedelta
 
 from openpyxl import load_workbook
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOURCE = os.path.join(ROOT, "sources", "youtube.xlsx")
-INSTAGRAM_SOURCE = os.path.join(ROOT, "sources", "instagram.xlsx")
-X_SOURCE = os.path.join(ROOT, "sources", "x.xlsx")
+SRC = os.path.join(ROOT, "sources")
+PATHS = {
+    "youtubeBase": os.path.join(SRC, "youtube.xlsx"),
+    "youtubeLong": os.path.join(SRC, "youtube_long.csv"),
+    "youtubeShortsLikes": os.path.join(SRC, "youtube_shorts_likes.csv"),
+    "Instagram": os.path.join(SRC, "instagram.xlsx"),
+    "TikTok": os.path.join(SRC, "tiktok.xlsx"),
+    "X": os.path.join(SRC, "x.xlsx"),
+}
 
 
 def number(value):
-    return 0 if value in (None, "", "-", "--", "N/A") else float(value)
+    if value in (None, "", "-", "--", "N/A"):
+        return 0.0
+    return float(value)
 
 
-workbook = load_workbook(SOURCE, read_only=True, data_only=True)
-included = []
-status_counts = {}
-for sheet_name in ("Long Data", "Shorts Data"):
-    iterator = workbook[sheet_name].iter_rows(values_only=True)
-    headers = list(next(iterator))
-    rows = [dict(zip(headers, values)) for values in iterator if any(v is not None for v in values)]
-    status_counts[sheet_name] = dict(Counter(row.get("Analysis Status") for row in rows))
-    included.extend(row for row in rows if row.get("Analysis Status") == "Included")
+def clean(value):
+    return str(value or "").strip()
 
-formula_errors = {}
-for sheet in workbook.worksheets:
-    count = sum(1 for row in sheet.iter_rows(values_only=True) for value in row
-                if isinstance(value, str) and value.startswith("#"))
-    if count:
-        formula_errors[sheet.title] = count
-workbook.close()
 
-assert len(included) == 533
-assert len({row["Content"] for row in included}) == len(included)
-assert all(row.get("Video publish time") and row.get("Video title") for row in included)
-assert all((row["Video publish time"].date() if isinstance(row["Video publish time"], datetime)
-            else row["Video publish time"]).year == 2026 for row in included)
-assert all(row.get("Category") and row["Category"] != "Uncategorized" for row in included)
+def parse_date(value):
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    text = clean(value)
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%m/%d/%Y %H:%M", "%b %d, %Y"):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            pass
+    raise ValueError(f"Unrecognized date {value!r}")
 
-youtube = {
-    "posts": len(included),
-    "views": int(sum(number(row.get("Views")) for row in included)),
-    "eng": int(sum(number(row.get("Likes")) + number(row.get("Shares"))
-                   + number(row.get("Comments added")) for row in included)),
-    "reach": int(sum(number(row.get("Thumbnail impressions")) for row in included)),
-    "followers": int(sum(number(row.get("Subscribers")) for row in included)),
-    "watch_hours": round(sum(number(row.get("Watch time (hours)")) for row in included), 2),
-}
-summary_path = os.path.join(ROOT, "summary.json")
-with open(summary_path, encoding="utf-8") as handle:
+
+def workbook_rows(path, sheet):
+    wb = load_workbook(path, read_only=True, data_only=True)
+    try:
+        iterator = wb[sheet].iter_rows(values_only=True)
+        headers = [clean(value) for value in next(iterator)]
+        return [dict(zip(headers, values)) for values in iterator if any(value is not None for value in values)]
+    finally:
+        wb.close()
+
+
+def csv_rows(path):
+    with open(path, encoding="utf-8-sig", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def definition_date(path, label):
+    wb = load_workbook(path, read_only=True, data_only=True)
+    try:
+        for row in wb["Definitions"].iter_rows(values_only=True):
+            if clean(row[0]) == label:
+                return parse_date(row[1]).isoformat()
+    finally:
+        wb.close()
+    raise AssertionError(f"Missing {label!r} in {path}")
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def raw_total(rows, platform):
+    if platform == "Instagram":
+        return {
+            "posts": len(rows),
+            "views": int(sum(number(row["Views"]) for row in rows)),
+            "eng": int(sum(sum(number(row[field]) for field in ("Likes", "Comments", "Shares", "Saves")) for row in rows)),
+            "reach": int(sum(number(row["Reach"]) for row in rows)),
+            "followers": int(sum(number(row["Follows"]) for row in rows)),
+            "watch_hours": 0,
+        }
+    if platform == "TikTok":
+        return {
+            "posts": len(rows),
+            "views": int(sum(number(row["Views"]) for row in rows)),
+            "eng": int(sum(sum(number(row[field]) for field in ("Likes", "Comments", "Shares", "Bookmarks")) for row in rows)),
+            "reach": 0,
+            "followers": 0,
+            "watch_hours": 0,
+        }
+    if platform == "X":
+        return {
+            "posts": len(rows),
+            "views": int(sum(number(row["Views"]) for row in rows)),
+            "eng": int(sum(number(row["Engagements"]) for row in rows)),
+            "reach": 0,
+            "followers": 0,
+            "watch_hours": 0,
+        }
+    raise ValueError(platform)
+
+
+with open(os.path.join(ROOT, "summary.json"), encoding="utf-8") as handle:
     summary = json.load(handle)
-for key, expected in youtube.items():
-    assert summary["totals"]["YouTube"][key] == expected, (key, summary["totals"]["YouTube"][key], expected)
-assert youtube == {"posts": 533, "views": 3398233, "eng": 141189, "reach": 2401564,
-                   "followers": 4355, "watch_hours": 46338.44}
-assert summary["youtube_subscribers"]["long_form"] == 1290
-assert summary["youtube_subscribers"]["shorts"] == 3065
-assert sum(row["gained"] for row in summary["youtube_subscribers"]["weekly"]) == 4355
-assert summary["report_scope"]["end"] == "2026-08-23"
-assert summary["common_coverage_end"] == "2026-08-27"
 
-instagram_workbook = load_workbook(INSTAGRAM_SOURCE, read_only=True, data_only=True)
-instagram_iterator = instagram_workbook["IG Data"].iter_rows(values_only=True)
-instagram_headers = list(next(instagram_iterator))
-instagram_rows = [dict(zip(instagram_headers, values)) for values in instagram_iterator
-                  if any(value is not None for value in values)]
-instagram_workbook.close()
-
-
-def instagram_date(row):
-    value = row["Publish time"]
-    if isinstance(value, datetime):
-        return value.date()
-    if isinstance(value, date):
-        return value
-    return datetime.strptime(str(value), "%Y-%m-%d").date()
-
-
-instagram = {
-    "posts": len(instagram_rows),
-    "views": int(sum(number(row.get("Views")) for row in instagram_rows)),
-    "eng": int(sum(number(row.get("Likes")) + number(row.get("Comments"))
-                   + number(row.get("Shares")) + number(row.get("Saves"))
-                   for row in instagram_rows)),
-    "reach": int(sum(number(row.get("Reach")) for row in instagram_rows)),
-    "followers": int(sum(number(row.get("Follows")) for row in instagram_rows)),
+# Instagram, TikTok, and X raw-source contracts.
+source_specs = {
+    "Instagram": ("IG Data", "Post ID", "Publish time", "Permalink", "Category"),
+    "TikTok": ("TT Data", "Post ID", "Publish time", "URL", "Category"),
+    "X": ("X Data", "Post ID", "Date", "URL", "Category"),
 }
-instagram_ids = [str(row["Post ID"] or "").strip() for row in instagram_rows]
-assert all(instagram_ids)
-assert len(set(instagram_ids)) == len(instagram_rows)
-assert min(instagram_date(row) for row in instagram_rows).isoformat() == "2026-01-02"
-assert max(instagram_date(row) for row in instagram_rows).isoformat() == "2026-09-09"
-assert instagram == {"posts": 632, "views": 5505479, "eng": 256824,
-                     "reach": 4240392, "followers": 7752}
-for key, expected in instagram.items():
-    assert summary["totals"]["Instagram"][key] == expected
+raw = {}
+for platform, (sheet, id_field, date_field, url_field, category_field) in source_specs.items():
+    rows = workbook_rows(PATHS[platform], sheet)
+    raw[platform] = rows
+    ids = [clean(row[id_field]) for row in rows]
+    urls = [clean(row[url_field]) for row in rows]
+    assert ids and all(ids) and len(ids) == len(set(ids)), platform
+    assert urls and all(urls) and len(urls) == len(set(urls)), platform
+    assert all(row.get(date_field) and clean(row.get(category_field)) for row in rows), platform
+    expected = raw_total(rows, platform)
+    for key, value in expected.items():
+        assert summary["totals"][platform][key] == value, (platform, key, summary["totals"][platform][key], value)
 
-instagram_spike = next(row for row in instagram_rows if str(row["Post ID"]) == "18088151342667442")
-assert instagram_date(instagram_spike).isoformat() == "2026-09-01"
-assert int(number(instagram_spike["Views"])) == 570204
-assert int(sum(number(instagram_spike.get(metric)) for metric in ("Likes", "Comments", "Shares", "Saves"))) == 9345
-assert instagram_spike["Category"] == "News"
-assert instagram_spike["Permalink"] == "https://www.instagram.com/reel/DcwjXdij1Xz/"
-
-
-def instagram_week(start_text, end_text):
-    start, end = date.fromisoformat(start_text), date.fromisoformat(end_text)
-    rows = [row for row in instagram_rows if start <= instagram_date(row) <= end]
-    return {
-        "posts": len(rows),
-        "views": int(sum(number(row.get("Views")) for row in rows)),
-        "eng": int(sum(number(row.get("Likes")) + number(row.get("Comments"))
-                       + number(row.get("Shares")) + number(row.get("Saves")) for row in rows)),
-    }
-
-
-instagram_week_checks = {
-    "2026-08-31": instagram_week("2026-08-31", "2026-09-06"),
-    "2026-09-07": instagram_week("2026-09-07", "2026-09-09"),
+assert raw_total(raw["Instagram"], "Instagram") == {
+    "posts": 659, "views": 5790528, "eng": 275801, "reach": 4467027,
+    "followers": 8433, "watch_hours": 0,
 }
-assert instagram_week_checks["2026-08-31"] == {"posts": 29, "views": 1031426, "eng": 24190}
-assert instagram_week_checks["2026-09-07"] == {"posts": 8, "views": 439312, "eng": 76335}
-
-x_workbook = load_workbook(X_SOURCE, read_only=True, data_only=True)
-x_iterator = x_workbook["X Data"].iter_rows(values_only=True)
-x_headers = list(next(x_iterator))
-x_rows = [dict(zip(x_headers, values)) for values in x_iterator
-          if any(value is not None for value in values)]
-x_workbook.close()
-
-
-def x_date(row):
-    value = row["Date"]
-    if isinstance(value, datetime):
-        return value.date()
-    if isinstance(value, date):
-        return value
-    return datetime.strptime(str(value)[:10], "%Y-%m-%d").date()
-
-
-x_metric_fields = ("Views", "Engagements", "Likes", "Replies", "Reposts", "Bookmarks")
-x = {
-    "posts": len(x_rows),
-    "views": int(sum(number(row.get("Views")) for row in x_rows)),
-    "eng": int(sum(number(row.get("Engagements")) for row in x_rows)),
-    "reach": 0,
-    "followers": 0,
-    "watch_hours": 0,
+assert raw_total(raw["TikTok"], "TikTok") == {
+    "posts": 636, "views": 1686012, "eng": 81331, "reach": 0,
+    "followers": 0, "watch_hours": 0,
 }
-x_ids = [str(row["Post ID"] or "").strip() for row in x_rows]
-x_urls = [str(row["URL"] or "").strip() for row in x_rows]
-assert all(x_ids) and len(set(x_ids)) == len(x_rows)
-assert all(x_urls) and len(set(x_urls)) == len(x_rows)
-assert all(row.get("Date") and row.get("Post text") and row.get("Category") for row in x_rows)
-assert all(number(row.get(metric)) >= 0 for row in x_rows for metric in x_metric_fields)
-assert min(x_date(row) for row in x_rows).isoformat() == "2026-01-01"
-assert max(x_date(row) for row in x_rows).isoformat() == "2026-09-09"
-assert x == {"posts": 1010, "views": 113343623, "eng": 3349708,
-             "reach": 0, "followers": 0, "watch_hours": 0}
-for key, expected in x.items():
-    assert summary["totals"]["X"][key] == expected
-
-x_source_counts = dict(Counter(str(row.get("Source") or "").strip() for row in x_rows))
-assert x_source_counts == {
-    "X analytics export": 622,
-    "raw scrape": 347,
-    "scrape 2026-09-10": 41,
+assert raw_total(raw["X"], "X") == {
+    "posts": 1037, "views": 114419284, "eng": 3360942, "reach": 0,
+    "followers": 0, "watch_hours": 0,
 }
-x_sep10_rows = [row for row in x_rows if row.get("Source") == "scrape 2026-09-10"]
-assert len(x_sep10_rows) == 41
-assert all(int(number(row.get("Engagements"))) == int(sum(number(row.get(metric))
-               for metric in ("Likes", "Replies", "Reposts", "Bookmarks")))
-           for row in x_sep10_rows)
 
-x_spike = next(row for row in x_rows if str(row["Post ID"]).strip() == "2097857838068518996")
-assert x_date(x_spike).isoformat() == "2026-09-09"
-assert int(number(x_spike["Views"])) == 251851
-assert int(number(x_spike["Engagements"])) == 822
-assert x_spike["Category"] == "General clips"
-assert x_spike["URL"] == "https://x.com/OfTheBraveUSA/status/2097857838068518996"
+tiktok_source_total = int(sum(number(row["Total Engagements"]) for row in raw["TikTok"]))
+tiktok_component_total = raw_total(raw["TikTok"], "TikTok")["eng"]
+tiktok_disagreements = [
+    clean(row["Post ID"]) for row in raw["TikTok"]
+    if int(number(row["Total Engagements"])) != int(sum(number(row[field]) for field in ("Likes", "Comments", "Shares", "Bookmarks")))
+]
+assert tiktok_source_total == 80838
+assert tiktok_component_total == 81331
+assert len(tiktok_disagreements) == 8
 
+# YouTube mixed-source reconciliation.
+base_shorts = [
+    row for row in workbook_rows(PATHS["youtubeBase"], "Shorts Data")
+    if clean(row.get("Analysis Status")) == "Included"
+]
+assert len(base_shorts) == 478
 
-def x_week(start_text, end_text):
-    start, end = date.fromisoformat(start_text), date.fromisoformat(end_text)
-    rows = [row for row in x_rows if start <= x_date(row) <= end]
-    return {
-        "posts": len(rows),
-        "views": int(sum(number(row.get("Views")) for row in rows)),
-        "eng": int(sum(number(row.get("Engagements")) for row in rows)),
-    }
-
-
-x_week_checks = {
-    "2026-08-17": x_week("2026-08-17", "2026-08-23"),
-    "2026-08-31": x_week("2026-08-31", "2026-09-06"),
-    "2026-09-07": x_week("2026-09-07", "2026-09-09"),
+shorts_daily = csv_rows(PATHS["youtubeShortsLikes"])
+shorts_patch = defaultdict(int)
+shorts_date_keys = set()
+for row in shorts_daily:
+    content_id = clean(row["Content"])
+    key = (content_id, parse_date(row["Date"]).isoformat())
+    assert key not in shorts_date_keys
+    shorts_date_keys.add(key)
+    shorts_patch[content_id] += int(number(row["Likes"]))
+assert len(shorts_daily) == 1300
+assert len(shorts_patch) == 5
+assert set(shorts_patch) <= {clean(row["Content"]) for row in base_shorts}
+assert dict(shorts_patch) == {
+    "-D14do6qZ3Y": 1782,
+    "4QXQovg6ct8": 1643,
+    "7VluUF7T5ZA": 7383,
+    "GnhhMl85Q00": 1880,
+    "zsK6Q-kEIUY": 4076,
 }
-assert x_week_checks["2026-08-17"] == {"posts": 31, "views": 1424592, "eng": 30619}
-assert x_week_checks["2026-08-31"] == {"posts": 25, "views": 334491, "eng": 14904}
-assert x_week_checks["2026-09-07"] == {"posts": 9, "views": 393985, "eng": 6475}
-assert summary["report_scope"]["posts"] == 94
-assert summary["report_scope"]["views"] == 1662028
-assert summary["report_scope"]["eng"] == 39679
 
-x_categories = {str(row["Category"]).strip() for row in x_rows}
-assert len(summary["category_totals"]["X"]) == len(x_categories)
-for category in x_categories:
-    raw_rows = [row for row in x_rows if str(row["Category"]).strip() == category]
-    dashboard_row = next(row for row in summary["category_totals"]["X"]
-                         if row["category"] == category)
-    assert dashboard_row["posts"] == len(raw_rows)
-    assert dashboard_row["views"] == int(sum(number(row.get("Views")) for row in raw_rows))
-    assert dashboard_row["eng"] == int(sum(number(row.get("Engagements")) for row in raw_rows))
+long_all = csv_rows(PATHS["youtubeLong"])
+assert len(long_all) == 322
+long_detail = [row for row in long_all if clean(row["Content"]).lower() != "total"]
+assert len(long_detail) == 321
+assert len({clean(row["Content"]) for row in long_detail}) == 321
+long_2026 = []
+long_missing_date = 0
+long_outside_2026 = 0
+for row in long_detail:
+    if not clean(row["Video publish time"]):
+        long_missing_date += 1
+        continue
+    if parse_date(row["Video publish time"]).year != 2026:
+        long_outside_2026 += 1
+        continue
+    long_2026.append(row)
+assert (len(long_2026), long_missing_date, long_outside_2026) == (57, 245, 19)
+
+youtube_expected = {
+    "posts": len(long_2026) + len(base_shorts),
+    "views": int(sum(number(row["Views"]) for row in long_2026 + base_shorts)),
+    "eng": int(
+        sum(number(row["Likes"]) + number(row["Shares"]) + number(row["Comments added"]) for row in long_2026)
+        + sum(shorts_patch.get(clean(row["Content"]), int(number(row["Likes"])))
+              + number(row["Shares"]) + number(row["Comments added"]) for row in base_shorts)
+    ),
+    "reach": int(sum(number(row["Thumbnail impressions"]) for row in long_2026 + base_shorts)),
+    "followers": int(sum(number(row["Subscribers"]) for row in long_2026 + base_shorts)),
+    "watch_hours": round(sum(number(row["Watch time (hours)"]) for row in long_2026 + base_shorts), 2),
+}
+assert youtube_expected == {
+    "posts": 535, "views": 3406619, "eng": 141641, "reach": 2450304,
+    "followers": 4382, "watch_hours": 46644.88,
+}
+for key, value in youtube_expected.items():
+    assert summary["totals"]["YouTube"][key] == value, (key, summary["totals"]["YouTube"][key], value)
+
+youtube_posts = [post for post in summary["posts"] if post["platform"] == "YouTube"]
+assert len({post["id"] for post in youtube_posts}) == 535
+assert next(post for post in youtube_posts if post["id"] == "dcCxXltUBIk")["category"] == "Bill Kristol & Tom Joscelyn"
+assert next(post for post in youtube_posts if post["id"] == "j9qbcE0z_pE")["category"] == "Other"
+assert next(post for post in youtube_posts if post["id"] == "tkCk8MpoYyo")["category"] == "Ad"
+
+subscribers = summary["youtube_subscribers"]
+assert subscribers["gained"] == 4382
+assert subscribers["long_form"] == 1317
+assert subscribers["shorts"] == 3065
+assert subscribers["video_count"] == 535
+assert subscribers["complete_through"] == "2026-09-10"
+assert sum(row["gained"] for row in subscribers["weekly"]) == subscribers["gained"]
+assert sum(row["video_count"] for row in subscribers["weekly"]) == subscribers["video_count"]
+
+# Freshness and calendar coverage.
+expected_coverage = {"YouTube": "2026-09-18", "Instagram": "2026-09-18", "TikTok": "2026-09-18", "X": "2026-09-18"}
+expected_complete = {**expected_coverage, "YouTube": "2026-09-10"}
+expected_latest_post = {
+    "YouTube": "2026-09-15",
+    "Instagram": "2026-09-17",
+    "TikTok": "2026-09-17",
+    "X": "2026-09-17",
+}
+assert definition_date(PATHS["Instagram"], "Data through date") == "2026-09-18"
+assert definition_date(PATHS["TikTok"], "Data through date") == "2026-09-18"
+assert definition_date(PATHS["X"], "Data through date") == "2026-09-18"
+assert definition_date(PATHS["youtubeBase"], "Data cutoff") == "2026-09-10"
+assert summary["platform_coverage_end"] == expected_coverage
+assert summary["platform_complete_through"] == expected_complete
+assert summary["platform_latest_post_date"] == expected_latest_post
+assert summary["common_coverage_end"] == "2026-09-10"
+assert summary["report_scope"]["start"] == "2026-08-31"
+assert summary["report_scope"]["end"] == "2026-09-06"
+assert summary["report_scope"]["week"] == "Week 36"
+
+all_posts = summary["posts"]
+assert len(all_posts) == sum(total["posts"] for total in summary["totals"].values())
+assert all(post["date"].startswith("2026-") and post["week"] and post["category"] for post in all_posts)
+for platform in expected_latest_post:
+    assert max(post["date"] for post in all_posts if post["platform"] == platform) == expected_latest_post[platform]
+
+report_rows = [post for post in all_posts if "2026-08-31" <= post["date"] <= "2026-09-06"]
+assert summary["report_scope"]["posts"] == len(report_rows)
+assert summary["report_scope"]["views"] == sum(post["views"] for post in report_rows)
+assert summary["report_scope"]["eng"] == sum(post["engagements"] for post in report_rows)
+
+weeks = summary["weeks"]
+assert len(weeks) == 8
+assert weeks[0] == ["Week 29", "2026-07-13", "2026-07-19"]
+assert weeks[-1] == ["Week 36", "2026-08-31", "2026-09-06"]
+for previous, current in zip(weeks, weeks[1:]):
+    assert date.fromisoformat(current[1]) == date.fromisoformat(previous[1]) + timedelta(days=7)
 
 category_weeks = summary["category_weeks"]
-category_week_keys = [row[0] for row in category_weeks]
-trend_platforms = {"Instagram", "YouTube", "TikTok"}
-trend_posts = [post for post in summary["posts"] if post["platform"] in trend_platforms]
-assert len(category_weeks) == 37
+assert len(category_weeks) == 38
 assert category_weeks[0] == ["2026-01-01", "2026-01-01", "2026-01-04"]
-assert category_weeks[-1] == ["2026-09-07", "2026-09-07", "2026-09-09"]
+assert category_weeks[-1] == ["2026-09-14", "2026-09-14", "2026-09-18"]
 for previous, current in zip(category_weeks, category_weeks[1:]):
     assert date.fromisoformat(current[1]) == date.fromisoformat(previous[2]) + timedelta(days=1)
-for post in trend_posts:
-    matches = [week_key for week_key, week_start, week_end in category_weeks
-               if week_start <= post["date"] <= week_end]
-    assert len(matches) == 1, (post["platform"], post["id"], post["date"], matches)
+
+category_keys = [row[0] for row in category_weeks]
 for platform, categories in summary["category_weekly"].items():
-    assert "All categories" not in categories
     cutoff = summary["platform_coverage_end"][platform]
     for category, by_week in categories.items():
-        assert list(by_week) == category_week_keys
-        for week_key, week_start, week_end in category_weeks:
-            assert (by_week[week_key] is None) == (week_start > cutoff)
-            if week_start <= cutoff:
-                raw_rows = [post for post in trend_posts
-                            if post["platform"] == platform and post["category"] == category
-                            and week_start <= post["date"] <= min(week_end, cutoff)]
-                expected = {
-                    "posts": len(raw_rows),
-                    "views": sum(post["views"] for post in raw_rows),
-                    "eng": sum(post["engagements"] for post in raw_rows),
-                }
-                for metric in ("posts", "views", "eng"):
-                    assert by_week[week_key][metric] == expected[metric]
-        total = next(row for row in summary["category_totals"][platform]
-                     if row["category"] == category)
+        assert list(by_week) == category_keys
+        for key, start, end in category_weeks:
+            value = by_week[key]
+            if start > cutoff:
+                assert value is None
+                continue
+            rows = [post for post in all_posts if post["platform"] == platform and post["category"] == category and start <= post["date"] <= min(end, cutoff)]
+            assert value["posts"] == len(rows)
+            assert value["views"] == sum(post["views"] for post in rows)
+            assert value["eng"] == sum(post["engagements"] for post in rows)
+        total = next(row for row in summary["category_totals"][platform] if row["category"] == category)
         for metric in ("posts", "views", "eng"):
             assert sum(row[metric] for row in by_week.values() if row is not None) == total[metric]
-    for metric in ("posts", "views", "eng"):
-        assert sum(row[metric] for row in summary["category_totals"][platform]) == summary["totals"][platform][metric]
-    for week_key, week_start, week_end in category_weeks:
-        if week_start <= cutoff:
-            raw_rows = [row for row in summary["posts"]
-                        if row["platform"] == platform
-                        and week_start <= row["date"] <= min(week_end, cutoff)]
-            expected = {
-                "posts": len(raw_rows),
-                "views": sum(row["views"] for row in raw_rows),
-                "eng": sum(row["engagements"] for row in raw_rows),
-            }
-            for metric in ("posts", "views", "eng"):
-                assert sum(by_week[week_key][metric] for by_week in categories.values()) == expected[metric]
 
-spark_expected = {
-    "Instagram": {"first": "2026-07-20", "last": "2026-09-07", "end": "2026-09-09",
-                  "posts": 8, "views": 439312, "eng": 76335},
-    "YouTube": {"first": "2026-07-20", "last": "2026-09-07", "end": "2026-09-09",
-                "posts": 8, "views": 30905, "eng": 2345},
-    "TikTok": {"first": "2026-07-06", "last": "2026-08-24", "end": "2026-08-27",
-               "posts": 10, "views": 4661, "eng": 470},
-    "X": {"first": "2026-07-20", "last": "2026-09-07", "end": "2026-09-09",
-          "posts": 9, "views": 393985, "eng": 6475},
-}
-spark_default_expected = {
-    "Instagram": {"week": "2026-08-31", "posts": 29, "views": 1031426, "eng": 24190},
-    "YouTube": {"week": "2026-08-31", "posts": 30, "views": 160799, "eng": 5842},
-    "TikTok": {"week": "2026-08-17", "posts": 23, "views": 11081, "eng": 1080},
-    "X": {"week": "2026-08-31", "posts": 25, "views": 334491, "eng": 14904},
-}
-spark_checks = {}
-report_week_key = summary["report_scope"]["start"]
-for platform, cutoff_text in summary["platform_coverage_end"].items():
-    cutoff = date.fromisoformat(cutoff_text)
-    weeks = [row for row in category_weeks if date.fromisoformat(row[1]) <= cutoff][-8:]
-    assert len(weeks) == 8
-    rows = []
-    for week_key, start_text, _source_end in weeks:
-        start = date.fromisoformat(start_text)
-        scheduled_end = start + timedelta(days=6)
-        end = min(scheduled_end, cutoff)
-        raw_rows = [post for post in summary["posts"]
-                    if post["platform"] == platform
-                    and start <= date.fromisoformat(post["date"]) <= end]
-        row = {
-            "week": week_key,
-            "start": start_text,
-            "end": end.isoformat(),
-            "complete": end == scheduled_end,
-            "posts": len(raw_rows),
-            "views": sum(post["views"] for post in raw_rows),
-            "eng": sum(post["engagements"] for post in raw_rows),
-        }
-        rows.append(row)
-        if week_key == report_week_key:
-            for metric in ("posts", "views", "eng"):
-                assert row[metric] == summary["report_scope"]["totals"][platform][metric]
-    latest = rows[-1]
-    expected = spark_expected[platform]
-    assert rows[0]["week"] == expected["first"]
-    assert latest["week"] == expected["last"]
-    for metric in ("end", "posts", "views", "eng"):
-        assert latest[metric] == expected[metric], (platform, metric, latest[metric], expected[metric])
-    assert latest["complete"] is False
-    default = next(row for row in reversed(rows) if row["complete"])
-    default_expected = spark_default_expected[platform]
-    for metric in ("week", "posts", "views", "eng"):
-        assert default[metric] == default_expected[metric], (platform, metric, default[metric], default_expected[metric])
-    spark_checks[platform] = {"weeks": len(rows), "first": rows[0]["start"],
-                              "defaultLatestComplete": default, "latest": latest}
-
+# Top-five coverage and ordering.
 top5_weeks = summary["top5_weeks"]
-assert len(top5_weeks) == 11
-assert [row[0] for row in top5_weeks] == [f"Week {number}" for number in range(27, 38)]
-assert top5_weeks[0] == ["Week 27", "2026-06-29", "2026-07-05"]
-assert top5_weeks[-1] == ["Week 37", "2026-09-07", "2026-09-13"]
+assert top5_weeks[0] == ["Week 29", "2026-07-13", "2026-07-19"]
+assert top5_weeks[-1] == ["Week 38", "2026-09-14", "2026-09-20"]
 assert summary["top5_default_week"] == "Week 36"
-assert list(summary["top5"]) == [row[0] for row in top5_weeks]
-assert list(summary["top5_coverage"]) == [row[0] for row in top5_weeks]
-
-late_top5_expected = {
-    "Week 35": {
-        "Instagram": ("complete", 22, "2026-08-30", 7),
-        "YouTube": ("complete", 22, "2026-08-30", 7),
-        "TikTok": ("partial", 10, "2026-08-27", 4),
-        "X": ("complete", 16, "2026-08-30", 7),
-    },
-    "Week 36": {
-        "Instagram": ("complete", 29, "2026-09-06", 7),
-        "YouTube": ("complete", 30, "2026-09-06", 7),
-        "TikTok": ("unavailable", 0, None, 0),
-        "X": ("complete", 25, "2026-09-06", 7),
-    },
-    "Week 37": {
-        "Instagram": ("partial", 8, "2026-09-09", 3),
-        "YouTube": ("partial", 8, "2026-09-09", 3),
-        "TikTok": ("unavailable", 0, None, 0),
-        "X": ("partial", 9, "2026-09-09", 3),
-    },
-}
-
-for week_name, start_text, end_text in top5_weeks:
-    for platform, cutoff_text in summary["platform_coverage_end"].items():
+for week_name, start, end in top5_weeks:
+    for platform in expected_coverage:
         coverage = summary["top5_coverage"][week_name][platform]
-        assert coverage["source_end"] == cutoff_text
-        if cutoff_text < start_text:
-            expected_status, coverage_end, covered_days = "unavailable", None, 0
+        source_end = expected_coverage[platform]
+        complete_through = expected_complete[platform]
+        if source_end < start:
+            expected_status, coverage_end, reason = "unavailable", None, None
         else:
-            coverage_end = min(end_text, cutoff_text)
-            expected_status = "complete" if coverage_end == end_text else "partial"
-            covered_days = (date.fromisoformat(coverage_end) - date.fromisoformat(start_text)).days + 1
+            coverage_end = min(end, source_end)
+            expected_status = "complete" if end <= complete_through else "partial"
+            reason = None if expected_status == "complete" else ("source-mix" if complete_through < source_end else "date-cutoff")
         assert coverage["status"] == expected_status
         assert coverage["coverage_end"] == coverage_end
-        assert coverage["covered_days"] == covered_days
-        raw_rows = [
-            post for post in summary["posts"]
-            if post["platform"] == platform
-            and coverage_end is not None
-            and start_text <= post["date"] <= coverage_end
-        ]
-        assert coverage["posts"] == len(raw_rows)
-        expected_top5 = sorted(
-            raw_rows,
-            key=lambda post: (-post["views"], post["date"], post["id"]),
-        )[:5]
-        actual_top5 = summary["top5"][week_name][platform]
-        assert [post["id"] for post in actual_top5] == [post["id"] for post in expected_top5]
-        assert all(start_text <= post["date"] <= coverage_end for post in actual_top5) if coverage_end else not actual_top5
+        assert coverage["partial_reason"] == reason
+        rows = [post for post in all_posts if post["platform"] == platform and coverage_end and start <= post["date"] <= coverage_end]
+        assert coverage["posts"] == len(rows)
+        expected_top = sorted(rows, key=lambda post: (-post["views"], post["date"], post["id"]))[:5]
+        assert [post["id"] for post in summary["top5"][week_name][platform]] == [post["id"] for post in expected_top]
 
-for week_name, by_platform in late_top5_expected.items():
-    for platform, (status, posts, coverage_end, covered_days) in by_platform.items():
-        coverage = summary["top5_coverage"][week_name][platform]
-        assert (coverage["status"], coverage["posts"], coverage["coverage_end"], coverage["covered_days"]) == (
-            status, posts, coverage_end, covered_days,
-        )
-        if status != "unavailable":
-            assert len(summary["top5"][week_name][platform]) == 5
+w37 = summary["top5_coverage"]["Week 37"]
+assert w37["YouTube"]["status"] == "partial" and w37["YouTube"]["partial_reason"] == "source-mix"
+assert all(w37[platform]["status"] == "complete" for platform in ("Instagram", "TikTok", "X"))
+w38 = summary["top5_coverage"]["Week 38"]
+assert {platform: w38[platform]["posts"] for platform in expected_coverage} == {
+    "YouTube": 1, "Instagram": 16, "TikTok": 16, "X": 13,
+}
+assert w38["YouTube"]["partial_reason"] == "source-mix"
+assert all(w38[platform]["covered_days"] == 5 for platform in expected_coverage)
 
-dashboard = open(os.path.join(ROOT, "dashboard.html"), encoding="utf-8").read()
-index = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+# Generated artifact checks.
+dashboard_path = os.path.join(ROOT, "dashboard.html")
+index_path = os.path.join(ROOT, "index.html")
+dashboard = open(dashboard_path, encoding="utf-8").read()
+index = open(index_path, encoding="utf-8").read()
 assert dashboard == index
-assert ">YouTube subscriber metric<" in dashboard
-assert ">YouTube subscribers gained<" not in dashboard
-assert "3,398,233" in dashboard or '"views":3398233' in dashboard
-assert "Every available 2026 publish week" in dashboard
-assert "dates mark the start of each week" in dashboard
-assert "all available 2026 weekly" in dashboard
-assert "No categories selected — choose Show all" in dashboard
-assert "Deselect all" in dashboard
-assert "Latest 8 available publish weeks." in dashboard
-assert "Latest complete platform week" in dashboard
-assert "const defaultSparkWeek=" in dashboard
-assert "Partial publish week through" in dashboard
-assert "scheduledEnd=shiftDate(start,6)" in dashboard
-assert "spark-fill${week.complete?\"\":\" partial\"}" in dashboard
-assert "partial ${coveredDays(last.start,last.end)}/7 days" in dashboard
-assert "Instagram: Meta Business Suite export with published-post coverage through 2026-09-09; 632 reviewed posts." in dashboard
-assert '"p":"Instagram"' in dashboard and '"v":570204' in dashboard
-assert "X: combined analytics export and scrape with authored-post coverage through 2026-09-09; 1,010 authored posts; rows that are themselves reposted posts were excluded upstream." in dashboard
-assert "X engagement uses the source-reported Engagements field. Analytics-export and earlier raw-scrape rows can include actions beyond likes, replies, reposts, and bookmarks; the 41 Sep 10 scrape rows use the visible component sum. Reposts interaction counts are retained." in dashboard
-assert '"p":"X"' in dashboard and '"v":251851' in dashboard
-assert "data-spark-platform=" in dashboard
-assert "spark-readout" in dashboard
-assert 'ALL_CATEGORIES="All categories"' in dashboard
-assert 'stroke-dasharray="8 4"' in dashboard
-assert 'data-point-week=' in dashboard
-assert 'Posts behind this point' in dashboard
-assert 'Open video / post' in dashboard
-assert '"cw":"2026-01-01"' in dashboard
-assert "Coverage differs by platform. Results are marked complete, partial, or unavailable." in dashboard
-assert '"top5DefaultWeek":"Week 36"' in dashboard
-assert '"Week 37","2026-09-07","2026-09-13"' in dashboard
-assert "D.top5Weeks.map" in dashboard
-assert "topWeekOptionStatus" in dashboard
-assert "renderTops(D.top5DefaultWeek)" in dashboard
-assert "Source unavailable after" in dashboard
-assert "This is unavailable data, not a measured zero." in dashboard
-assert "No posts published during the available partial coverage period." in dashboard
-assert "Complete source coverage, with no posts published in this week." in dashboard
-assert 'role="tabpanel" aria-live="polite"' in dashboard
-assert 'aria-controls="tops"' in dashboard
-assert "tabs.scrollLeft=Math.max" in dashboard
-assert '.filter(x=>x.v>0)' not in dashboard
+required_html = [
+    "YouTube subscriber metric",
+    "Deselect all",
+    "Show all",
+    "Posts behind this point",
+    "Open video / post",
+    "Partial source mix",
+    "full Shorts catalog through",
+    "outlined bars have partial source coverage",
+    '\"top5DefaultWeek\":\"Week 36\"',
+    '\"Week 38\",\"2026-09-14\",\"2026-09-20\"',
+    '\"completeThrough\"',
+    "Source unavailable after",
+    "This is unavailable data, not a measured zero.",
+]
+for text in required_html:
+    assert text in dashboard, text
+assert "3.4M" in dashboard or '\"views\":3406619' in dashboard
+assert "114.4M" in dashboard or '\"views\":114419284' in dashboard
 
 with open(os.path.join(ROOT, "all_posts.csv"), encoding="utf-8-sig", newline="") as handle:
-    post_rows = list(csv.DictReader(handle))
-assert len(post_rows) == sum(total["posts"] for total in summary["totals"].values())
-assert sum(row["Platform"] == "YouTube" for row in post_rows) == 533
-assert sum(row["Platform"] == "Instagram" for row in post_rows) == 632
-assert sum(row["Platform"] == "X" for row in post_rows) == 1010
-assert all(row["Week"] for row in post_rows)
-instagram_spike_csv = next(row for row in post_rows if row["Platform"] == "Instagram"
-                           and row["Link"] == "https://www.instagram.com/reel/DcwjXdij1Xz/")
-assert instagram_spike_csv["Week"] == "Week 36"
-x_spike_csv = next(row for row in post_rows if row["Platform"] == "X"
-                   and row["Link"] == "https://x.com/OfTheBraveUSA/status/2097857838068518996")
-assert x_spike_csv["Week"] == "Week 37"
+    normalized = list(csv.DictReader(handle))
+assert len(normalized) == len(all_posts)
+for platform, expected in summary["totals"].items():
+    rows = [row for row in normalized if row["Platform"] == platform]
+    assert len(rows) == expected["posts"]
+    assert sum(int(row["Views / Impressions"]) for row in rows) == expected["views"]
+    assert sum(int(row["Engagements"]) for row in rows) == expected["eng"]
+assert all(row["Week"] and row["Date"] and row["Category"] for row in normalized)
 
 result = {
-    "source": os.path.basename(SOURCE),
-    "sourceSha256": hashlib.sha256(open(SOURCE, "rb").read()).hexdigest(),
-    "instagramSourceSha256": hashlib.sha256(open(INSTAGRAM_SOURCE, "rb").read()).hexdigest(),
-    "xSourceSha256": hashlib.sha256(open(X_SOURCE, "rb").read()).hexdigest(),
-    "includedYouTubeRows": 533,
-    "statusCounts": status_counts,
-    "youtubeTotals": youtube,
-    "instagramTotals": instagram,
-    "instagramSpike": {
-        "postId": str(instagram_spike["Post ID"]),
-        "publishDate": instagram_date(instagram_spike).isoformat(),
-        "views": int(number(instagram_spike["Views"])),
-        "engagements": int(sum(number(instagram_spike.get(metric)) for metric in ("Likes", "Comments", "Shares", "Saves"))),
-        "url": instagram_spike["Permalink"],
-    },
-    "instagramWeeklyChecks": instagram_week_checks,
-    "xTotals": x,
-    "xSourceCounts": x_source_counts,
-    "xSpike": {
-        "postId": str(x_spike["Post ID"]),
-        "publishDate": x_date(x_spike).isoformat(),
-        "impressions": int(number(x_spike["Views"])),
-        "engagements": int(number(x_spike["Engagements"])),
-        "url": x_spike["URL"],
-    },
-    "xWeeklyChecks": x_week_checks,
-    "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
+    "sourceSha256": {name: sha256(path) for name, path in PATHS.items()},
+    "totals": summary["totals"],
     "reportingWeek": summary["report_scope"],
-    "platformCardLatestWeeks": spark_checks,
-    "topFiveWeeks": {
-        "weeks": len(top5_weeks),
+    "coverage": {
+        "activityThrough": summary["platform_coverage_end"],
+        "completeThrough": summary["platform_complete_through"],
+        "latestPost": summary["platform_latest_post_date"],
+    },
+    "youtube": {
+        "longIncluded": len(long_2026),
+        "shortsRetained": len(base_shorts),
+        "shortsLikesPatched": len(shorts_patch),
+        "shortsPatchMetricDates": [min(key[1] for key in shorts_date_keys), max(key[1] for key in shorts_date_keys)],
+        "mixedFreshness": True,
+    },
+    "tiktokEngagementAudit": {
+        "componentDefinitionTotal": tiktok_component_total,
+        "sourceTotalEngagements": tiktok_source_total,
+        "disagreementRows": tiktok_disagreements,
+    },
+    "topFive": {
         "first": top5_weeks[0],
         "last": top5_weeks[-1],
         "default": summary["top5_default_week"],
-        "lateCoverage": late_top5_expected,
-    },
-    "knownWorkbookFormulaErrors": {
-        "count": sum(formula_errors.values()),
-        "bySheet": formula_errors,
-        "impact": "Cached weekly delta cells only; dashboard recomputes from included Long Data and Shorts Data rows.",
+        "week38": w38,
     },
     "checks": [
-        "533 unique included YouTube Content IDs",
-        "All included YouTube rows have 2026 publish dates, titles and recognized categories",
-        "Dashboard YouTube totals reconcile to raw included rows",
-        "Dashboard Instagram totals reconcile to 632 unique raw IG Data rows through Sep 9",
-        "Instagram Aug 31 and Sep 7 weekly spikes reconcile to raw posts, including the 570,204-view Sep 1 reel",
-        "Dashboard X totals and category totals reconcile to 1,010 unique raw X Data rows through Sep 9",
-        "X Aug 31 and Sep 7 weeks reconcile to raw posts, including the 251,851-impression Sep 9 post",
-        "All 41 Sep 10 X scrape rows reconcile source Engagements to likes, replies, reposts, and bookmarks",
-        "Dashboard source coverage discloses the differing X engagement definitions and retained Reposts interaction counts",
-        "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
-        "Headline week remains within common four-platform coverage",
-        "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
-        "Every trend-platform post maps to exactly one category week",
-        "Every platform, category, and week point reconciles to its underlying post rows",
-        "Category chart axes use readable dates and stop at each platform's latest included publish date",
-        "Category charts include Show all and Deselect all controls",
-        "Platform cards label their headline units and expose selectable weekly bar details",
-        "Platform mini bars use each source's latest eight consecutive weeks, default to its latest complete week, and mark partial final weeks",
-        "All categories lines reconcile to platform totals and use a distinct dashed treatment",
-        "Selectable category points expose ranked contributing posts with exact publish dates and links",
-        "Dashboard and index HTML match",
-        "All-post CSV row counts reconcile to the dashboard summary",
-        "Every all-post CSV row retains its publish-week label, including new posts after the shared comparison window",
-        "Top-five rankings extend from Week 27 through Week 37 without changing the shared Week 34 headline",
-        "Weeks 35–37 reconcile to their source-covered dates and expose complete, partial, and unavailable platform states",
-        "Unavailable platform coverage remains distinct from a covered week with zero posts",
-        "Top-five ordering and cutoff compliance reconcile to the normalized post rows for every displayed platform-week",
+        "All platform IDs and URLs are unique within their source",
+        "Instagram, TikTok, and X totals reconcile to raw post rows",
+        "TikTok engagements consistently use visible components for all rows",
+        "YouTube long-form refresh reconciles to 57 dated 2026 videos",
+        "Five-video Shorts feed patches only Likes and retains the 478-video catalog",
+        "YouTube category mappings are preserved for matched IDs",
+        "Mixed YouTube freshness is distinct from measured zero activity",
+        "Headline week is the latest complete shared Monday-Sunday week",
+        "Category weeks and top-five rankings reconcile to normalized posts",
+        "Dashboard and index HTML match the normalized data layer",
+        "all_posts.csv reconciles to every platform total",
     ],
 }
 with open(os.path.join(ROOT, "validation.json"), "w", encoding="utf-8") as handle:
-    json.dump(result, handle, ensure_ascii=False, indent=2)
-    handle.write("\n")
-print(json.dumps({"status": "PASS", "youtube": youtube,
-                  "knownWorkbookFormulaErrors": sum(formula_errors.values())}, indent=2))
+    json.dump(result, handle, ensure_ascii=False, indent=2, sort_keys=True)
+
+print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))

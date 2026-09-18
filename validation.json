@@ -1,373 +1,210 @@
 {
-  "source": "youtube.xlsx",
-  "sourceSha256": "d9c63a5d0ba4d050c6a975cb3b89a54c3feef10482c237d61c2cdf373b8e044b",
-  "instagramSourceSha256": "35b0389dbaa6f7e97ce4a41c6ef7d08c734426ada1fe29475dea39258e5bc51d",
-  "xSourceSha256": "613708059843829322dd2ccbde50fad285d8efb1d823873079d5bce987ab45f9",
-  "includedYouTubeRows": 533,
-  "statusCounts": {
-    "Long Data": {
-      "Aggregate row excluded": 1,
-      "Missing publish date": 244,
-      "Included": 55,
-      "Outside 2026 period": 19
+  "checks": [
+    "All platform IDs and URLs are unique within their source",
+    "Instagram, TikTok, and X totals reconcile to raw post rows",
+    "TikTok engagements consistently use visible components for all rows",
+    "YouTube long-form refresh reconciles to 57 dated 2026 videos",
+    "Five-video Shorts feed patches only Likes and retains the 478-video catalog",
+    "YouTube category mappings are preserved for matched IDs",
+    "Mixed YouTube freshness is distinct from measured zero activity",
+    "Headline week is the latest complete shared Monday-Sunday week",
+    "Category weeks and top-five rankings reconcile to normalized posts",
+    "Dashboard and index HTML match the normalized data layer",
+    "all_posts.csv reconciles to every platform total"
+  ],
+  "coverage": {
+    "activityThrough": {
+      "Instagram": "2026-09-18",
+      "TikTok": "2026-09-18",
+      "X": "2026-09-18",
+      "YouTube": "2026-09-18"
     },
-    "Shorts Data": {
-      "Aggregate row excluded": 1,
-      "Included": 478,
-      "Outside 2026 period": 21
+    "completeThrough": {
+      "Instagram": "2026-09-18",
+      "TikTok": "2026-09-18",
+      "X": "2026-09-18",
+      "YouTube": "2026-09-10"
+    },
+    "latestPost": {
+      "Instagram": "2026-09-17",
+      "TikTok": "2026-09-17",
+      "X": "2026-09-17",
+      "YouTube": "2026-09-15"
     }
   },
-  "youtubeTotals": {
-    "posts": 533,
-    "views": 3398233,
-    "eng": 141189,
-    "reach": 2401564,
-    "followers": 4355,
-    "watch_hours": 46338.44
-  },
-  "instagramTotals": {
-    "posts": 632,
-    "views": 5505479,
-    "eng": 256824,
-    "reach": 4240392,
-    "followers": 7752
-  },
-  "instagramSpike": {
-    "postId": "18088151342667442",
-    "publishDate": "2026-09-01",
-    "views": 570204,
-    "engagements": 9345,
-    "url": "https://www.instagram.com/reel/DcwjXdij1Xz/"
-  },
-  "instagramWeeklyChecks": {
-    "2026-08-31": {
-      "posts": 29,
-      "views": 1031426,
-      "eng": 24190
-    },
-    "2026-09-07": {
-      "posts": 8,
-      "views": 439312,
-      "eng": 76335
-    }
-  },
-  "xTotals": {
-    "posts": 1010,
-    "views": 113343623,
-    "eng": 3349708,
-    "reach": 0,
-    "followers": 0,
-    "watch_hours": 0
-  },
-  "xSourceCounts": {
-    "X analytics export": 622,
-    "raw scrape": 347,
-    "scrape 2026-09-10": 41
-  },
-  "xSpike": {
-    "postId": "2097857838068518996",
-    "publishDate": "2026-09-09",
-    "impressions": 251851,
-    "engagements": 822,
-    "url": "https://x.com/OfTheBraveUSA/status/2097857838068518996"
-  },
-  "xWeeklyChecks": {
-    "2026-08-17": {
-      "posts": 31,
-      "views": 1424592,
-      "eng": 30619
-    },
-    "2026-08-31": {
-      "posts": 25,
-      "views": 334491,
-      "eng": 14904
-    },
-    "2026-09-07": {
-      "posts": 9,
-      "views": 393985,
-      "eng": 6475
-    }
-  },
-  "subscriberMetric": "Source Subscribers; not relabeled as Subscribers gained and not a channel balance",
   "reportingWeek": {
-    "end": "2026-08-23",
-    "eng": 39679,
-    "posts": 94,
-    "start": "2026-08-17",
+    "end": "2026-09-06",
+    "eng": 55385,
+    "posts": 113,
+    "start": "2026-08-31",
     "totals": {
       "Instagram": {
-        "avg_views": 5968,
-        "eng": 3810,
-        "er": 2.9,
-        "followers": 99,
-        "posts": 22,
-        "reach": 108764,
-        "views": 131294,
+        "avg_views": 35566,
+        "eng": 24190,
+        "er": 2.35,
+        "followers": 394,
+        "posts": 29,
+        "reach": 775078,
+        "views": 1031426,
         "watch_hours": 0
       },
       "TikTok": {
-        "avg_views": 482,
-        "eng": 1080,
-        "er": 9.75,
+        "avg_views": 9284,
+        "eng": 10446,
+        "er": 3.88,
         "followers": 0,
-        "posts": 23,
+        "posts": 29,
         "reach": 0,
-        "views": 11081,
+        "views": 269235,
         "watch_hours": 0
       },
       "X": {
-        "avg_views": 45955,
-        "eng": 30619,
-        "er": 2.15,
+        "avg_views": 13380,
+        "eng": 14904,
+        "er": 4.46,
         "followers": 0,
-        "posts": 31,
+        "posts": 25,
         "reach": 0,
-        "views": 1424592,
+        "views": 334491,
         "watch_hours": 0
       },
       "YouTube": {
-        "avg_views": 5281,
-        "eng": 4170,
-        "er": 4.39,
-        "followers": 91,
-        "posts": 18,
-        "reach": 10824,
-        "views": 95061,
-        "watch_hours": 575.07
-      }
-    },
-    "views": 1662028,
-    "week": "Week 34"
-  },
-  "platformCardLatestWeeks": {
-    "Instagram": {
-      "weeks": 8,
-      "first": "2026-07-20",
-      "defaultLatestComplete": {
-        "week": "2026-08-31",
-        "start": "2026-08-31",
-        "end": "2026-09-06",
-        "complete": true,
-        "posts": 29,
-        "views": 1031426,
-        "eng": 24190
-      },
-      "latest": {
-        "week": "2026-09-07",
-        "start": "2026-09-07",
-        "end": "2026-09-09",
-        "complete": false,
-        "posts": 8,
-        "views": 439312,
-        "eng": 76335
-      }
-    },
-    "TikTok": {
-      "weeks": 8,
-      "first": "2026-07-06",
-      "defaultLatestComplete": {
-        "week": "2026-08-17",
-        "start": "2026-08-17",
-        "end": "2026-08-23",
-        "complete": true,
-        "posts": 23,
-        "views": 11081,
-        "eng": 1080
-      },
-      "latest": {
-        "week": "2026-08-24",
-        "start": "2026-08-24",
-        "end": "2026-08-27",
-        "complete": false,
-        "posts": 10,
-        "views": 4661,
-        "eng": 470
-      }
-    },
-    "X": {
-      "weeks": 8,
-      "first": "2026-07-20",
-      "defaultLatestComplete": {
-        "week": "2026-08-31",
-        "start": "2026-08-31",
-        "end": "2026-09-06",
-        "complete": true,
-        "posts": 25,
-        "views": 334491,
-        "eng": 14904
-      },
-      "latest": {
-        "week": "2026-09-07",
-        "start": "2026-09-07",
-        "end": "2026-09-09",
-        "complete": false,
-        "posts": 9,
-        "views": 393985,
-        "eng": 6475
-      }
-    },
-    "YouTube": {
-      "weeks": 8,
-      "first": "2026-07-20",
-      "defaultLatestComplete": {
-        "week": "2026-08-31",
-        "start": "2026-08-31",
-        "end": "2026-09-06",
-        "complete": true,
+        "avg_views": 5363,
+        "eng": 5845,
+        "er": 3.63,
+        "followers": 123,
         "posts": 30,
-        "views": 160799,
-        "eng": 5842
-      },
-      "latest": {
-        "week": "2026-09-07",
-        "start": "2026-09-07",
-        "end": "2026-09-09",
-        "complete": false,
-        "posts": 8,
-        "views": 30905,
-        "eng": 2345
+        "reach": 128299,
+        "views": 160889,
+        "watch_hours": 1002.79
       }
-    }
+    },
+    "views": 1796041,
+    "week": "Week 36"
   },
-  "topFiveWeeks": {
-    "weeks": 11,
+  "sourceSha256": {
+    "Instagram": "7520a1662625c7a4c207f16273b57f7628be88b10d6a49291671754e22850b62",
+    "TikTok": "4aeb50c44959482704189b136fcdd11d87ec1ea96605ef961a336cf0151d1801",
+    "X": "513ca9e81ee57afff9e46f73c7f5d4e8017ddb8bf6a292b4af97c82e38fd68fc",
+    "youtubeBase": "d9c63a5d0ba4d050c6a975cb3b89a54c3feef10482c237d61c2cdf373b8e044b",
+    "youtubeLong": "71e552e1721e07c3e90d5cf0878825d2de5ad4746a4ac559044a3404cfcee2fb",
+    "youtubeShortsLikes": "7bc927b08be866f91728873b1d47c587fc24ae2843b2bc088d22c5abedbf7839"
+  },
+  "tiktokEngagementAudit": {
+    "componentDefinitionTotal": 81331,
+    "disagreementRows": [
+      "7676865091102444831",
+      "7677690617555684639",
+      "7677744661737245982",
+      "7678011362072694047",
+      "7678333697086573854",
+      "7678378684482358558",
+      "7678754148510076190",
+      "7683927402753330462"
+    ],
+    "sourceTotalEngagements": 80838
+  },
+  "topFive": {
+    "default": "Week 36",
     "first": [
-      "Week 27",
-      "2026-06-29",
-      "2026-07-05"
+      "Week 29",
+      "2026-07-13",
+      "2026-07-19"
     ],
     "last": [
-      "Week 37",
-      "2026-09-07",
-      "2026-09-13"
+      "Week 38",
+      "2026-09-14",
+      "2026-09-20"
     ],
-    "default": "Week 36",
-    "lateCoverage": {
-      "Week 35": {
-        "Instagram": [
-          "complete",
-          22,
-          "2026-08-30",
-          7
-        ],
-        "YouTube": [
-          "complete",
-          22,
-          "2026-08-30",
-          7
-        ],
-        "TikTok": [
-          "partial",
-          10,
-          "2026-08-27",
-          4
-        ],
-        "X": [
-          "complete",
-          16,
-          "2026-08-30",
-          7
-        ]
+    "week38": {
+      "Instagram": {
+        "complete_through": "2026-09-18",
+        "coverage_end": "2026-09-18",
+        "covered_days": 5,
+        "partial_reason": "date-cutoff",
+        "posts": 16,
+        "source_end": "2026-09-18",
+        "status": "partial"
       },
-      "Week 36": {
-        "Instagram": [
-          "complete",
-          29,
-          "2026-09-06",
-          7
-        ],
-        "YouTube": [
-          "complete",
-          30,
-          "2026-09-06",
-          7
-        ],
-        "TikTok": [
-          "unavailable",
-          0,
-          null,
-          0
-        ],
-        "X": [
-          "complete",
-          25,
-          "2026-09-06",
-          7
-        ]
+      "TikTok": {
+        "complete_through": "2026-09-18",
+        "coverage_end": "2026-09-18",
+        "covered_days": 5,
+        "partial_reason": "date-cutoff",
+        "posts": 16,
+        "source_end": "2026-09-18",
+        "status": "partial"
       },
-      "Week 37": {
-        "Instagram": [
-          "partial",
-          8,
-          "2026-09-09",
-          3
-        ],
-        "YouTube": [
-          "partial",
-          8,
-          "2026-09-09",
-          3
-        ],
-        "TikTok": [
-          "unavailable",
-          0,
-          null,
-          0
-        ],
-        "X": [
-          "partial",
-          9,
-          "2026-09-09",
-          3
-        ]
+      "X": {
+        "complete_through": "2026-09-18",
+        "coverage_end": "2026-09-18",
+        "covered_days": 5,
+        "partial_reason": "date-cutoff",
+        "posts": 13,
+        "source_end": "2026-09-18",
+        "status": "partial"
+      },
+      "YouTube": {
+        "complete_through": "2026-09-10",
+        "coverage_end": "2026-09-18",
+        "covered_days": 5,
+        "partial_reason": "source-mix",
+        "posts": 1,
+        "source_end": "2026-09-18",
+        "status": "partial"
       }
     }
   },
-  "knownWorkbookFormulaErrors": {
-    "count": 1002,
-    "bySheet": {
-      "Long Bill & Tom": 75,
-      "Long Ad": 99,
-      "Long Social Ads": 96,
-      "Long KOC": 99,
-      "Long HOTB Podcast": 69,
-      "Short News": 66,
-      "Short Bill & Tom": 78,
-      "Short Breaking News": 45,
-      "Short HOTB Pod": 81,
-      "Short Ad": 99,
-      "Short Social Ads": 96,
-      "Short Sarah Matthews": 99
+  "totals": {
+    "Instagram": {
+      "avg_views": 8787,
+      "eng": 275801,
+      "er": 4.76,
+      "followers": 8433,
+      "posts": 659,
+      "reach": 4467027,
+      "views": 5790528,
+      "watch_hours": 0
     },
-    "impact": "Cached weekly delta cells only; dashboard recomputes from included Long Data and Shorts Data rows."
+    "TikTok": {
+      "avg_views": 2651,
+      "eng": 81331,
+      "er": 4.82,
+      "followers": 0,
+      "posts": 636,
+      "reach": 0,
+      "views": 1686012,
+      "watch_hours": 0
+    },
+    "X": {
+      "avg_views": 110337,
+      "eng": 3360942,
+      "er": 2.94,
+      "followers": 0,
+      "posts": 1037,
+      "reach": 0,
+      "views": 114419284,
+      "watch_hours": 0
+    },
+    "YouTube": {
+      "avg_views": 6368,
+      "eng": 141641,
+      "er": 4.16,
+      "followers": 4382,
+      "posts": 535,
+      "reach": 2450304,
+      "views": 3406619,
+      "watch_hours": 46644.88
+    }
   },
-  "checks": [
-    "533 unique included YouTube Content IDs",
-    "All included YouTube rows have 2026 publish dates, titles and recognized categories",
-    "Dashboard YouTube totals reconcile to raw included rows",
-    "Dashboard Instagram totals reconcile to 632 unique raw IG Data rows through Sep 9",
-    "Instagram Aug 31 and Sep 7 weekly spikes reconcile to raw posts, including the 570,204-view Sep 1 reel",
-    "Dashboard X totals and category totals reconcile to 1,010 unique raw X Data rows through Sep 9",
-    "X Aug 31 and Sep 7 weeks reconcile to raw posts, including the 251,851-impression Sep 9 post",
-    "All 41 Sep 10 X scrape rows reconcile source Engagements to likes, replies, reposts, and bookmarks",
-    "Dashboard source coverage discloses the differing X engagement definitions and retained Reposts interaction counts",
-    "Subscriber weekly totals reconcile to the 4,355 source Subscribers value",
-    "Headline week remains within common four-platform coverage",
-    "All 37 available 2026 category weeks are contiguous and reconcile to category totals",
-    "Every trend-platform post maps to exactly one category week",
-    "Every platform, category, and week point reconciles to its underlying post rows",
-    "Category chart axes use readable dates and stop at each platform's latest included publish date",
-    "Category charts include Show all and Deselect all controls",
-    "Platform cards label their headline units and expose selectable weekly bar details",
-    "Platform mini bars use each source's latest eight consecutive weeks, default to its latest complete week, and mark partial final weeks",
-    "All categories lines reconcile to platform totals and use a distinct dashed treatment",
-    "Selectable category points expose ranked contributing posts with exact publish dates and links",
-    "Dashboard and index HTML match",
-    "All-post CSV row counts reconcile to the dashboard summary",
-    "Every all-post CSV row retains its publish-week label, including new posts after the shared comparison window",
-    "Top-five rankings extend from Week 27 through Week 37 without changing the shared Week 34 headline",
-    "Weeks 35–37 reconcile to their source-covered dates and expose complete, partial, and unavailable platform states",
-    "Unavailable platform coverage remains distinct from a covered week with zero posts",
-    "Top-five ordering and cutoff compliance reconcile to the normalized post rows for every displayed platform-week"
-  ]
+  "youtube": {
+    "longIncluded": 57,
+    "mixedFreshness": true,
+    "shortsLikesPatched": 5,
+    "shortsPatchMetricDates": [
+      "2026-01-01",
+      "2026-09-17"
+    ],
+    "shortsRetained": 478
+  }
 }

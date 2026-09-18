@@ -24,16 +24,20 @@ PYTHON=/path/to/python ./build.sh
 
 ## Updating the data
 
-Replace these files with refreshed workbooks that preserve the current raw-data sheet names and headers:
+Replace these files with refreshed sources that preserve the current raw-data sheet names and headers:
 
-- `sources/youtube.xlsx`
+- `sources/youtube.xlsx` — reviewed full Shorts catalog and category map
+- `sources/youtube_long.csv` — authoritative current long-form snapshot
+- `sources/youtube_shorts_likes.csv` — optional daily Likes patch for matched Shorts
 - `sources/instagram.xlsx`
 - `sources/tiktok.xlsx`
 - `sources/x.xlsx`
 
-Then run `./build.sh`. The headline period is selected automatically as the newest fully complete Monday–Sunday week across the file dates. The platform trend table keeps eight complete weeks of shared context. The top-post selector retains those context weeks and extends through the newest publish week in any source, labeling complete, partial, and unavailable platform coverage separately. The category line charts show every available 2026 publish week through each platform's latest included publish date, with week-start dates on the axis. The post explorer retains the entire available file.
+Then run `./build.sh`. The headline period is selected automatically as the newest fully complete Monday–Sunday week across the source coverage dates. The platform trend table keeps eight complete weeks of shared context. The top-post selector retains those context weeks and extends through the newest covered publish week, labeling complete, partial, mixed-source, and unavailable coverage separately. The category line charts show every available 2026 publish week through each platform's data-through date, with week-start dates on the axis. The post explorer retains the entire available file.
 
-The YouTube importer honors the workbook's `Analysis Status` field when it is present, using only `Included` rows. It accepts the legacy `Subscribers gained` and current `Subscribers` column names, but preserves the current workbook's metric label in the dashboard. Aggregate rows, undated rows, and rows outside 2026 stay in the source workbook and remain outside dashboard analysis.
+The YouTube importer uses the current long-form CSV for dated 2026 long videos and preserves reviewed categories from `youtube.xlsx`. The full `Shorts Data` tab remains authoritative for the Shorts catalog and all non-Likes metrics. The supplied Sep 18 Shorts CSV contains daily Likes for only five existing videos, so it patches only those five Likes totals; it does not replace the Shorts catalog. Aggregate rows, undated rows, and rows outside 2026 remain outside dashboard analysis.
+
+TikTok engagements are recomputed consistently as Likes + Comments + Shares + Bookmarks. This avoids mixing the workbook's eight inconsistent `Total Engagements` cells with component-derived rows.
 
 See `HANDOFF.md` for metric definitions, source-sheet assumptions, and validation checks.
 
